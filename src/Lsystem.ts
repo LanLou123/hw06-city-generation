@@ -49,9 +49,10 @@ export class Lsystem{
     Angle : number = 18;
     StepSize : number = 0.2;
     maxdp:number = 0;
-    length:number = 500;
+    length:number = 40;
     texture:readtex;
     numCells:number = 20;
+    blockdens = 10;
     constructor(tex:readtex){
         this.texture = new readtex(tex.buf,tex.scrw,tex.scrh);
         this.EdgeLis = new Array<Array<edge>>(this.numCells*this.numCells);
@@ -62,9 +63,11 @@ export class Lsystem{
 
         this.doThings(vec2.fromValues(-0.7,-0.5),vec3.fromValues(0,0,1));
         this.doThings(vec2.fromValues(-0.7,-0.5),vec3.fromValues(0,0,-1));
-        this.doThings(vec2.fromValues(1,0.),vec3.fromValues(-1,0,1));
+        this.doThings(vec2.fromValues(0.3,-0),vec3.fromValues(1,0,0));
+        this.doThings(vec2.fromValues(0.3,-0),vec3.fromValues(-1,0,0));
+        //this.doThings(vec2.fromValues(1,0.),vec3.fromValues(-1,0,1));
         this.doThings(vec2.fromValues(0,1.),vec3.fromValues(1,0,-1));
-        this.doThings(vec2.fromValues(0,1.),vec3.fromValues(0,0,-1));
+       // this.doThings(vec2.fromValues(0,1.),vec3.fromValues(0,0,-1));
     }
 
 
@@ -87,6 +90,14 @@ export class Lsystem{
         let p0y :number = start[1];
         let p1x :number = end[0];
         let p1y :number = end[1];
+    }
+
+    setHigwayLen(l : number){
+        this.length = l;
+    }
+
+    setblockdens(d:number){
+        this.blockdens = d;
     }
 
     checksaround(pos:vec2){
@@ -120,8 +131,8 @@ export class Lsystem{
         curt.depth = 0;
         stack.push(curt);
         let first:boolean = true;
-        let snapradius = 2  ;
-        let stepdivsize = 2;
+        let snapradius = 2.8;
+        let stepdivsize = 2.5;
         while(curt.depth<iterations&&stack.length!=0) {
             if(curt.pos[0]<-1||curt.pos[0]>1||
                 curt.pos[2]<-1||curt.pos[2]>1)
@@ -136,7 +147,11 @@ export class Lsystem{
                 dir=0;
                 first = false;
             }
-            if(dir>0.5&&dir<=1) {
+            if(this.texture.readdens(vec2.fromValues(curt.pos[0],curt.pos[2]))<0.3){
+                curt = stack.pop();
+                continue;
+            }
+            if(dir>0.4&&dir<=1) {
                 let oldpos = vec3.clone(curt.pos);
                 curt.moveforward(this.StepSize/stepdivsize);
                 let npos = this.checksaround(vec2.fromValues(curt.pos[0],curt.pos[2]));
@@ -149,9 +164,9 @@ export class Lsystem{
                     this.pushNeighborhood(new Branch(oldpos, vec3.clone(curt.pos), curt.depth,1));
                 }
             }
-            else if(dir>0.25&&dir<=0.5) {
+            else if(dir>0.2&&dir<=0.4) {
                 let oldpos = vec3.clone(curt.pos);
-                curt.rotateAroundUp(270);
+                curt.rotateAroundUp(-90);
                 curt.moveforward(this.StepSize/stepdivsize);
                 let npos = this.checksaround(vec2.fromValues(curt.pos[0],curt.pos[2]));
                 if(vec2.distance(npos,vec2.fromValues(curt.pos[0],curt.pos[2]))<this.StepSize/snapradius){
@@ -163,7 +178,7 @@ export class Lsystem{
                     this.pushNeighborhood(new Branch(oldpos, vec3.clone(curt.pos), curt.depth,1));
                 }
             }
-            else if(dir>0.0&&dir<=0.25) {
+            else if(dir>0.0&&dir<=0.2) {
                 let oldpos = vec3.clone(curt.pos);
                 curt.rotateAroundUp(90);
                 curt.moveforward(this.StepSize/stepdivsize);
@@ -204,7 +219,7 @@ export class Lsystem{
         for(let i = 1;i<20;i++){
             let cura = 0;
             let curt = t.clone();
-            t.rotateAroundUp(i*18);
+            curt.rotateAroundUp(i*18);
             for(let j = 0;j<8;j++){
                 cura+=this.texture.readdens(vec2.fromValues(curt.pos[0],curt.pos[2]));
                 curt.moveforward(this.StepSize);
@@ -228,13 +243,8 @@ export class Lsystem{
         let outangle = 0;
         for(let i = 1;i<20;i++){
             let cura = 0;
-            let curt = new Turtle();
-            vec3.copy(curt.pos,t.pos);
-            vec3.copy(curt.up,t.up);
-            vec3.copy(curt.look,t.look);
-            vec3.copy(curt.right,t.right);
-            mat4.copy(curt.transform,t.transform);
-            t.rotateAroundUp(i*18);
+            let curt = t.clone();
+            curt.rotateAroundUp(i*18);
             for(let j = 0;j<8;j++){
                 cura+=this.texture.readdens(vec2.fromValues(curt.pos[0],curt.pos[2]));
                 curt.moveforward(this.StepSize);
@@ -246,10 +256,72 @@ export class Lsystem{
         }
         let rnd = Math.random();
         if(outangle>180){
-            outangle = 180+(outangle-180)/(40-rnd*10);
+            outangle = 180+(outangle-180)/(40-rnd*30);
         }
         else if(outangle<180){
-            outangle = 180-(outangle)/(40-rnd*10);
+            outangle = 180-(outangle)/(40-rnd*30);
+        }
+        return outangle;
+    }
+
+    highwayavoidwater(t:Turtle){
+        let mina = 100;
+        let outangle = 0;
+        let turangle = 20;
+        let allland  = true;
+        for(let i = 0;i<5;i++){
+            let curt = t.clone();
+            curt.rotateAroundUp(i*turangle+0-turangle*2);
+            curt.moveforward(this.StepSize);
+           let cura=this.texture.readwater(vec2.fromValues(curt.pos[0],curt.pos[2]));
+
+            if(Math.abs(cura-0.41)<mina){
+                if(cura>0.47) allland = false;
+                mina = Math.abs(cura-0.41);
+                outangle = i*turangle+0-turangle*2;
+            }
+        }
+        if(allland) return 0;
+        return outangle;
+    }
+
+    heighwayavoidwaterandseekpop(t:Turtle){
+        let maxa = 0;
+        let outangle = 0;
+        let turangle = 3;
+        for(let i = 0;i<5;i++){
+            let cura = 0;
+            let curt = t.clone();
+            curt.rotateAroundUp(i*turangle+0-turangle*2);
+            for(let j = 0;j<5;j++){
+                cura+=this.texture.readdens(vec2.fromValues(curt.pos[0],curt.pos[2]));
+                cura-=this.texture.readwater(vec2.fromValues(curt.pos[0],curt.pos[2]));
+                curt.moveforward(this.StepSize/2);
+            }
+            if(cura>maxa){
+                maxa = cura;
+                outangle = i*turangle+0-turangle*2;
+            }
+        }
+        return outangle;
+    }
+
+    highwayseekpop(t:Turtle){
+        let maxa = 0;
+        let outangle = 0;
+        let turangle = 3;
+        for(let i = 0;i<5;i++){
+            let cura = 0;
+            let curt = t.clone();
+            curt.rotateAroundUp(i*turangle+0-turangle*2);
+            for(let j = 0;j<3;j++){
+                cura+=this.texture.readdens(vec2.fromValues(curt.pos[0],curt.pos[2]));
+                curt.moveforward(this.StepSize/2);
+            }
+            if(cura>maxa){
+                maxa = cura;
+                outangle = i*turangle+0-turangle*2;
+            }
         }
         return outangle;
     }
@@ -258,7 +330,7 @@ export class Lsystem{
 
     doThings(startpos:vec2,heading:vec3): void {
         vec3.normalize(heading,heading);
-
+        let stack = new Array();
         let turtle = new Turtle(vec3.fromValues(startpos[0],0,startpos[1]),
             vec3.fromValues(0,1,0),heading,
             vec3.fromValues(1,0,0));
@@ -267,30 +339,37 @@ export class Lsystem{
                 turtle.pos[2]<-1||turtle.pos[2]>1)){
                 break;
             }
-           let r = Math.random();
-            if(1){
-                let start = vec3.fromValues(turtle.pos[0],turtle.pos[1],turtle.pos[2]);
-                turtle.moveforward(this.StepSize);
-                let end = vec3.create();
-                vec3.copy(end,turtle.pos);
-                let waters = this.texture.readwater(vec2.fromValues(start[0],start[2]));
-                let watere =  this.texture.readwater(vec2.fromValues(end[0],end[2]));
-                //if(waters<0.5&&watere<0.5)
-                this.BranchList.push(new Branch(start,end, turtle.depth,0));
-                this.maxdp = Math.max(this.maxdp,turtle.depth);
+
+
+            let angle = this.highwayavoidwater(turtle.clone());
+            turtle.rotateAroundUp(angle);
+            let start = vec3.fromValues(turtle.pos[0],turtle.pos[1],turtle.pos[2]);
+
+            turtle.moveforward(this.StepSize*1);
+            let end = vec3.create();
+            vec3.copy(end,turtle.pos);
+            this.BranchList.push(new Branch(start,end, turtle.depth,0));
+            this.maxdp = Math.max(this.maxdp,turtle.depth);
+
+
+            //high way guid
+
+
+            let pp = Math.random();
+            if(pp>0.9){
+                stack.push(turtle.clone());
             }
 
-            let angle = this.detectdir(turtle);
-            turtle.rotateAroundUp(angle);
+
 
             if(1){
                 let curt1 = turtle.clone();
                 let curt2 = turtle.clone();
                 curt1.rotateAroundUp(90);
                 let pop = this.texture.readdens(vec2.fromValues(curt1.pos[0],curt1.pos[2]));
-                this.drawgrid(curt1,15*(Math.pow(1+pop,2)));
-                curt2.rotateAroundUp(270);
-                this.drawgrid(curt2,15*(Math.pow(1+pop,2)));
+                this.drawgrid(curt1,this.blockdens*(1+pop));
+                curt2.rotateAroundUp(-90);
+                this.drawgrid(curt2,this.blockdens*(1+pop));
 
             }
         }

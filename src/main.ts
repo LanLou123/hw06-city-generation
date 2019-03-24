@@ -12,6 +12,10 @@ import {readtex} from './readtex';
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
 const controls = {
+  'Generate' : setupLsys,
+    mask : 'population',
+    highwayLength : 30,
+    NeighborhoodDensity : 10,
 };
 
 let square: Square;
@@ -32,6 +36,8 @@ function setupLsys(){
     myl= new Lsystem(tex);
     myl.setAngle(20);
     myl.setStepSize(50/window.innerHeight);
+    myl.setHigwayLen(controls.highwayLength);
+    myl.setblockdens(controls.NeighborhoodDensity);
     myl.genLsys();
 
     let aa = myl.BranchList.length;
@@ -67,8 +73,8 @@ function setupLsys(){
             0,0,1,0,
             0,0,0,1);
         let width = 1;
-        if(type==0) width = 5;
-        else if(type==1) width = 1.7;
+        if(type==0) width = 3;
+        else if(type==1) width = 1.2;
         let sc = len/(myl.StepSize*10);
         mat4.scale(model,model,[width/10,1,sc*11]);
         mat4.multiply(model,rotmat,model);
@@ -102,6 +108,10 @@ function main() {
 
   // Add controls to the gui
   const gui = new DAT.GUI();
+  gui.add(controls,'Generate');
+  gui.add(controls,'mask',['population','heightField']);
+  gui.add(controls,'highwayLength',10,100).step(1);
+  gui.add(controls,'NeighborhoodDensity',5,50).step(1);
 
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
@@ -199,6 +209,12 @@ function main() {
 
 
 
+    if(controls.mask=='population'){
+        post.setdtype(0);
+    }
+    else{
+        post.setdtype(1);
+    }
 
     post.use();
     gl.activeTexture(gl.TEXTURE0);

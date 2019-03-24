@@ -6110,7 +6110,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
-const controls = {};
+const controls = {
+    'Generate': setupLsys,
+    mask: 'population',
+    highwayLength: 30,
+    NeighborhoodDensity: 10,
+};
 let square;
 let screenQuad;
 let time = 0.0;
@@ -6126,6 +6131,8 @@ function setupLsys() {
     myl = new __WEBPACK_IMPORTED_MODULE_9__Lsystem__["a" /* Lsystem */](tex);
     myl.setAngle(20);
     myl.setStepSize(50 / window.innerHeight);
+    myl.setHigwayLen(controls.highwayLength);
+    myl.setblockdens(controls.NeighborhoodDensity);
     myl.genLsys();
     let aa = myl.BranchList.length;
     let trans1 = [];
@@ -6154,9 +6161,9 @@ function setupLsys() {
         let model = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].fromValues(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
         let width = 1;
         if (type == 0)
-            width = 5;
+            width = 3;
         else if (type == 1)
-            width = 1.7;
+            width = 1.2;
         let sc = len / (myl.StepSize * 10);
         __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].scale(model, model, [width / 10, 1, sc * 11]);
         __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].multiply(model, rotmat, model);
@@ -6187,6 +6194,10 @@ function main() {
     document.body.appendChild(stats.domElement);
     // Add controls to the gui
     const gui = new __WEBPACK_IMPORTED_MODULE_2_dat_gui__["GUI"]();
+    gui.add(controls, 'Generate');
+    gui.add(controls, 'mask', ['population', 'heightField']);
+    gui.add(controls, 'highwayLength', 10, 100).step(1);
+    gui.add(controls, 'NeighborhoodDensity', 5, 50).step(1);
     // get canvas and webgl context
     const canvas = document.getElementById('canvas');
     const gl = canvas.getContext('webgl2');
@@ -6257,6 +6268,12 @@ function main() {
         flat.setTime(time++);
         gl.viewport(0, 0, window.innerWidth, window.innerHeight);
         renderer.clear();
+        if (controls.mask == 'population') {
+            post.setdtype(0);
+        }
+        else {
+            post.setdtype(1);
+        }
         post.use();
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, Density);
@@ -16590,6 +16607,7 @@ class ShaderProgram {
         this.unifEye = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_Eye");
         this.unifRef = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_Ref");
         this.unifUp = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_Up");
+        this.unifdtype = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_dtype");
     }
     use() {
         if (activeProgram !== this.prog) {
@@ -16643,6 +16661,12 @@ class ShaderProgram {
         this.use();
         if (this.unifTime !== -1) {
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1f(this.unifTime, t);
+        }
+    }
+    setdtype(t) {
+        this.use();
+        if (this.unifdtype != -1) {
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifdtype, t);
         }
     }
     draw(d) {
@@ -16773,17 +16797,20 @@ class Lsystem {
         this.Angle = 18;
         this.StepSize = 0.2;
         this.maxdp = 0;
-        this.length = 500;
+        this.length = 40;
         this.numCells = 20;
+        this.blockdens = 10;
         this.texture = new __WEBPACK_IMPORTED_MODULE_2__readtex__["a" /* readtex */](tex.buf, tex.scrw, tex.scrh);
         this.EdgeLis = new Array(this.numCells * this.numCells);
     }
     genLsys() {
         this.doThings(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(-0.7, -0.5), __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].fromValues(0, 0, 1));
         this.doThings(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(-0.7, -0.5), __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].fromValues(0, 0, -1));
-        this.doThings(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(1, 0.), __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].fromValues(-1, 0, 1));
+        this.doThings(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(0.3, -0), __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].fromValues(1, 0, 0));
+        this.doThings(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(0.3, -0), __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].fromValues(-1, 0, 0));
+        //this.doThings(vec2.fromValues(1,0.),vec3.fromValues(-1,0,1));
         this.doThings(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(0, 1.), __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].fromValues(1, 0, -1));
-        this.doThings(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(0, 1.), __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].fromValues(0, 0, -1));
+        // this.doThings(vec2.fromValues(0,1.),vec3.fromValues(0,0,-1));
     }
     map201(pos) {
         return __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues((pos[0] + 1) / 2, (pos[1] + 1) / 2);
@@ -16802,6 +16829,12 @@ class Lsystem {
         let p0y = start[1];
         let p1x = end[0];
         let p1y = end[1];
+    }
+    setHigwayLen(l) {
+        this.length = l;
+    }
+    setblockdens(d) {
+        this.blockdens = d;
     }
     checksaround(pos) {
         let mindis = 10.0;
@@ -16833,8 +16866,8 @@ class Lsystem {
         curt.depth = 0;
         stack.push(curt);
         let first = true;
-        let snapradius = 2;
-        let stepdivsize = 2;
+        let snapradius = 2.8;
+        let stepdivsize = 2.5;
         while (curt.depth < iterations && stack.length != 0) {
             if (curt.pos[0] < -1 || curt.pos[0] > 1 ||
                 curt.pos[2] < -1 || curt.pos[2] > 1)
@@ -16849,7 +16882,11 @@ class Lsystem {
                 dir = 0;
                 first = false;
             }
-            if (dir > 0.5 && dir <= 1) {
+            if (this.texture.readdens(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(curt.pos[0], curt.pos[2])) < 0.3) {
+                curt = stack.pop();
+                continue;
+            }
+            if (dir > 0.4 && dir <= 1) {
                 let oldpos = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].clone(curt.pos);
                 curt.moveforward(this.StepSize / stepdivsize);
                 let npos = this.checksaround(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(curt.pos[0], curt.pos[2]));
@@ -16862,9 +16899,9 @@ class Lsystem {
                     this.pushNeighborhood(new Branch(oldpos, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].clone(curt.pos), curt.depth, 1));
                 }
             }
-            else if (dir > 0.25 && dir <= 0.5) {
+            else if (dir > 0.2 && dir <= 0.4) {
                 let oldpos = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].clone(curt.pos);
-                curt.rotateAroundUp(270);
+                curt.rotateAroundUp(-90);
                 curt.moveforward(this.StepSize / stepdivsize);
                 let npos = this.checksaround(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(curt.pos[0], curt.pos[2]));
                 if (__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].distance(npos, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(curt.pos[0], curt.pos[2])) < this.StepSize / snapradius) {
@@ -16876,7 +16913,7 @@ class Lsystem {
                     this.pushNeighborhood(new Branch(oldpos, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].clone(curt.pos), curt.depth, 1));
                 }
             }
-            else if (dir > 0.0 && dir <= 0.25) {
+            else if (dir > 0.0 && dir <= 0.2) {
                 let oldpos = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].clone(curt.pos);
                 curt.rotateAroundUp(90);
                 curt.moveforward(this.StepSize / stepdivsize);
@@ -16920,7 +16957,7 @@ class Lsystem {
         for (let i = 1; i < 20; i++) {
             let cura = 0;
             let curt = t.clone();
-            t.rotateAroundUp(i * 18);
+            curt.rotateAroundUp(i * 18);
             for (let j = 0; j < 8; j++) {
                 cura += this.texture.readdens(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(curt.pos[0], curt.pos[2]));
                 curt.moveforward(this.StepSize);
@@ -16944,13 +16981,8 @@ class Lsystem {
         let outangle = 0;
         for (let i = 1; i < 20; i++) {
             let cura = 0;
-            let curt = new __WEBPACK_IMPORTED_MODULE_1__Turtle__["a" /* Turtle */]();
-            __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].copy(curt.pos, t.pos);
-            __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].copy(curt.up, t.up);
-            __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].copy(curt.look, t.look);
-            __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].copy(curt.right, t.right);
-            __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].copy(curt.transform, t.transform);
-            t.rotateAroundUp(i * 18);
+            let curt = t.clone();
+            curt.rotateAroundUp(i * 18);
             for (let j = 0; j < 8; j++) {
                 cura += this.texture.readdens(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(curt.pos[0], curt.pos[2]));
                 curt.moveforward(this.StepSize);
@@ -16962,43 +16994,103 @@ class Lsystem {
         }
         let rnd = Math.random();
         if (outangle > 180) {
-            outangle = 180 + (outangle - 180) / (40 - rnd * 10);
+            outangle = 180 + (outangle - 180) / (40 - rnd * 30);
         }
         else if (outangle < 180) {
-            outangle = 180 - (outangle) / (40 - rnd * 10);
+            outangle = 180 - (outangle) / (40 - rnd * 30);
+        }
+        return outangle;
+    }
+    highwayavoidwater(t) {
+        let mina = 100;
+        let outangle = 0;
+        let turangle = 20;
+        let allland = true;
+        for (let i = 0; i < 5; i++) {
+            let curt = t.clone();
+            curt.rotateAroundUp(i * turangle + 0 - turangle * 2);
+            curt.moveforward(this.StepSize);
+            let cura = this.texture.readwater(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(curt.pos[0], curt.pos[2]));
+            if (Math.abs(cura - 0.41) < mina) {
+                if (cura > 0.47)
+                    allland = false;
+                mina = Math.abs(cura - 0.41);
+                outangle = i * turangle + 0 - turangle * 2;
+            }
+        }
+        if (allland)
+            return 0;
+        return outangle;
+    }
+    heighwayavoidwaterandseekpop(t) {
+        let maxa = 0;
+        let outangle = 0;
+        let turangle = 3;
+        for (let i = 0; i < 5; i++) {
+            let cura = 0;
+            let curt = t.clone();
+            curt.rotateAroundUp(i * turangle + 0 - turangle * 2);
+            for (let j = 0; j < 5; j++) {
+                cura += this.texture.readdens(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(curt.pos[0], curt.pos[2]));
+                cura -= this.texture.readwater(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(curt.pos[0], curt.pos[2]));
+                curt.moveforward(this.StepSize / 2);
+            }
+            if (cura > maxa) {
+                maxa = cura;
+                outangle = i * turangle + 0 - turangle * 2;
+            }
+        }
+        return outangle;
+    }
+    highwayseekpop(t) {
+        let maxa = 0;
+        let outangle = 0;
+        let turangle = 3;
+        for (let i = 0; i < 5; i++) {
+            let cura = 0;
+            let curt = t.clone();
+            curt.rotateAroundUp(i * turangle + 0 - turangle * 2);
+            for (let j = 0; j < 3; j++) {
+                cura += this.texture.readdens(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(curt.pos[0], curt.pos[2]));
+                curt.moveforward(this.StepSize / 2);
+            }
+            if (cura > maxa) {
+                maxa = cura;
+                outangle = i * turangle + 0 - turangle * 2;
+            }
         }
         return outangle;
     }
     doThings(startpos, heading) {
         __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].normalize(heading, heading);
+        let stack = new Array();
         let turtle = new __WEBPACK_IMPORTED_MODULE_1__Turtle__["a" /* Turtle */](__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].fromValues(startpos[0], 0, startpos[1]), __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].fromValues(0, 1, 0), heading, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].fromValues(1, 0, 0));
         for (let i = 0; i < this.length; i++) {
             if ((turtle.pos[0] < -1 || turtle.pos[0] > 1 ||
                 turtle.pos[2] < -1 || turtle.pos[2] > 1)) {
                 break;
             }
-            let r = Math.random();
-            if (1) {
-                let start = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].fromValues(turtle.pos[0], turtle.pos[1], turtle.pos[2]);
-                turtle.moveforward(this.StepSize);
-                let end = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].create();
-                __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].copy(end, turtle.pos);
-                let waters = this.texture.readwater(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(start[0], start[2]));
-                let watere = this.texture.readwater(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(end[0], end[2]));
-                //if(waters<0.5&&watere<0.5)
-                this.BranchList.push(new Branch(start, end, turtle.depth, 0));
-                this.maxdp = Math.max(this.maxdp, turtle.depth);
-            }
-            let angle = this.detectdir(turtle);
+            let angle = this.highwayavoidwater(turtle.clone());
             turtle.rotateAroundUp(angle);
+            let start = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].fromValues(turtle.pos[0], turtle.pos[1], turtle.pos[2]);
+            turtle.moveforward(this.StepSize * 1);
+            let end = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].create();
+            __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].copy(end, turtle.pos);
+            this.BranchList.push(new Branch(start, end, turtle.depth, 0));
+            this.maxdp = Math.max(this.maxdp, turtle.depth);
+            //high way guid
+            let pp = Math.random();
+            if (pp > 0.9) {
+                stack.push(turtle.clone());
+            }
             if (1) {
                 let curt1 = turtle.clone();
                 let curt2 = turtle.clone();
                 curt1.rotateAroundUp(90);
                 let pop = this.texture.readdens(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(curt1.pos[0], curt1.pos[2]));
-                this.drawgrid(curt1, 15 * (Math.pow(1 + pop, 2)));
-                curt2.rotateAroundUp(270);
-                this.drawgrid(curt2, 15 * (Math.pow(1 + pop, 2)));
+                this.drawgrid(curt1, this.blockdens * (1 + pop));
+                curt2.rotateAroundUp(-90);
+                this.drawgrid(curt2, this.blockdens * (1 + pop));
             }
         }
     }
@@ -17080,7 +17172,7 @@ module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\n// The vertex
 /* 75 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\nlayout (location = 0) out vec4 Density;\r\n\r\n\r\nuniform vec3 u_Eye, u_Ref, u_Up;\r\nuniform vec2 u_Dimensions;\r\nuniform float u_Time;\r\n\r\nin vec2 fs_Pos;\r\n\r\n\r\nfloat random (in vec2 st) {\r\n    return fract(sin(dot(st.xy,\r\n                         vec2(12.9898,78.233)))*\r\n        43758.5453123);\r\n}\r\nfloat mixa(float a,float b,float r){\r\n    return a*(1.f-r)+b*r;\r\n}\r\n// Based on Morgan McGuire @morgan3d\r\n// https://www.shadertoy.com/view/4dS3Wd\r\nfloat noise (in vec2 st) {\r\n    vec2 i = floor(st);\r\n    vec2 f = fract(st);\r\n\r\n    // Four corners in 2D of a tile\r\n    float a = random(i);\r\n    float b = random(i + vec2(1.0, 0.0));\r\n    float c = random(i + vec2(0.0, 1.0));\r\n    float d = random(i + vec2(1.0, 1.0));\r\n\r\n    vec2 u = f * f * (3.0 - 2.0 * f);\r\n\r\n    return mixa(a, b, u.x) +\r\n            (c - a)* u.y * (1.0 - u.x) +\r\n            (d - b) * u.x * u.y;\r\n}\r\n\r\n#define OCTAVES 6\r\nfloat fbm (in vec2 st) {\r\n    // Initial values\r\n    float value = 0.0;\r\n    float amplitude = .5;\r\n    float frequency = 0.;\r\n    //\r\n    // Loop of octaves\r\n    for (int i = 0; i < OCTAVES; i++) {\r\n        value += amplitude * noise(st);\r\n        st *= 2.;\r\n        amplitude *= .5;\r\n    }\r\n    return value;\r\n}\r\n\r\n\r\nvoid main() {\r\n  vec2 uv = fs_Pos;\r\n  uv = vec2(uv.x*2.f,uv.y);\r\n  float water = fbm(uv*.5f +vec2(10.0,2950.0));\r\n  float col = fbm(uv*1.2f+vec2(40.,10.));\r\n  float tcol = fbm(uv*1.f+vec2(20.f,10.f));\r\n  Density = vec4(vec3(col,tcol,water),1.0);\r\n}\r\n"
+module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\nlayout (location = 0) out vec4 Density;\r\n\r\n\r\nuniform vec3 u_Eye, u_Ref, u_Up;\r\nuniform vec2 u_Dimensions;\r\nuniform float u_Time;\r\n\r\nin vec2 fs_Pos;\r\n\r\n\r\nfloat random (in vec2 st) {\r\n    return fract(sin(dot(st.xy,\r\n                         vec2(12.9898,78.233)))*\r\n        43758.5453123);\r\n}\r\nfloat mixa(float a,float b,float r){\r\n    return a*(1.f-r)+b*r;\r\n}\r\n// Based on Morgan McGuire @morgan3d\r\n// https://www.shadertoy.com/view/4dS3Wd\r\nfloat noise (in vec2 st) {\r\n    vec2 i = floor(st);\r\n    vec2 f = fract(st);\r\n\r\n    // Four corners in 2D of a tile\r\n    float a = random(i);\r\n    float b = random(i + vec2(1.0, 0.0));\r\n    float c = random(i + vec2(0.0, 1.0));\r\n    float d = random(i + vec2(1.0, 1.0));\r\n\r\n    vec2 u = f * f * (3.0 - 2.0 * f);\r\n\r\n    return mixa(a, b, u.x) +\r\n            (c - a)* u.y * (1.0 - u.x) +\r\n            (d - b) * u.x * u.y;\r\n}\r\n\r\n#define OCTAVES 6\r\nfloat fbm (in vec2 st) {\r\n    // Initial values\r\n    float value = 0.0;\r\n    float amplitude = .5;\r\n    float frequency = 0.;\r\n    //\r\n    // Loop of octaves\r\n    for (int i = 0; i < OCTAVES; i++) {\r\n        value += amplitude * noise(st);\r\n        st *= 2.;\r\n        amplitude *= .5;\r\n    }\r\n    return value;\r\n}\r\n\r\n\r\nvoid main() {\r\n  vec2 uv = fs_Pos;\r\n  uv = vec2(uv.x,uv.y);\r\n  float water = fbm(uv*1.f +vec2(231.0,9.0));\r\n  float col = fbm(uv*1.f+vec2(190.,210.));\r\n  float tcol = fbm(uv*1.f+vec2(20.f,10.f));\r\n  Density = vec4(vec3(col,tcol,water),1.0);\r\n}\r\n"
 
 /***/ }),
 /* 76 */
@@ -17092,7 +17184,7 @@ module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\n// The vertex
 /* 77 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\nuniform sampler2D Density;\r\n\r\nuniform vec3 u_Eye, u_Ref, u_Up;\r\nuniform vec2 u_Dimensions;\r\nuniform float u_Time;\r\n\r\nin vec2 fs_Pos;\r\n\r\nout vec4 out_col;\r\n\r\nvoid main(){\r\n    vec2 uv ;\r\n    uv.x = (fs_Pos.x+1.f)/2.f;\r\n    uv.y = (1.f-fs_Pos.y)/2.f;\r\n    vec4 den = texture(Density,uv);\r\n    vec4 col = vec4(0);\r\n    if(den.z>0.5){\r\n        col = vec4(0,0,1,1);\r\n    }\r\n    else{\r\n        vec4 landcol = vec4(vec3(1),1.0);\r\n        vec4 mtncol = vec4(vec3(0),1.0);\r\n        col = mix(mtncol,landcol,vec4(den.x));\r\n    }\r\n    out_col = col;\r\n}"
+module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\nuniform sampler2D Density;\r\n\r\nuniform int u_dtype;\r\n\r\nuniform vec3 u_Eye, u_Ref, u_Up;\r\nuniform vec2 u_Dimensions;\r\nuniform float u_Time;\r\n\r\nin vec2 fs_Pos;\r\n\r\nout vec4 out_col;\r\n\r\nvoid main(){\r\n    vec2 uv ;\r\n    uv.x = (fs_Pos.x+1.f)/2.f;\r\n    uv.y = (1.f-fs_Pos.y)/2.f;\r\n    vec4 den = texture(Density,uv);\r\n    vec4 col = vec4(0);\r\n    if(den.z>.5){\r\n        col = vec4(0,0,1,1);\r\n    }\r\n    else{\r\n        if(u_dtype==0){\r\n            col = mix(vec4(0.0,1.0,0.0,1.0),vec4(1.0,0.0,0.0,1.0),den.x);\r\n        }\r\n        else{\r\n            col = mix(vec4(1.0,1.0,1.0,1.0),vec4(0.0,1.0,0.0,1.0),den.z);\r\n        }\r\n\r\n    }\r\n    out_col = col;\r\n}"
 
 /***/ })
 /******/ ]);

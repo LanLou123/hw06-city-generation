@@ -57,9 +57,9 @@ float fbm (in vec2 st) {
 
 void main() {
   vec2 uv = fs_Pos;
-  uv = vec2(uv.x*2.f,uv.y);
-  float water = fbm(uv*.5f +vec2(10.0,2950.0));
-  float col = fbm(uv*1.2f+vec2(40.,10.));
+  uv = vec2(uv.x,uv.y);
+  float water = fbm(uv*1.f +vec2(231.0,9.0));
+  float col = fbm(uv*1.f+vec2(190.,210.));
   float tcol = fbm(uv*1.f+vec2(20.f,10.f));
   Density = vec4(vec3(col,tcol,water),1.0);
 }
