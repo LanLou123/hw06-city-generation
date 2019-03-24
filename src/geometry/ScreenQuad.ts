@@ -6,6 +6,7 @@ class ScreenQuad extends Drawable {
   indices: Uint32Array;
   positions: Float32Array;
 
+
   constructor() {
     super();
   }
