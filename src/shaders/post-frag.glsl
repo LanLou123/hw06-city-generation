@@ -16,7 +16,7 @@ out vec4 out_col;
 void main(){
     vec2 uv ;
     uv.x = (fs_Pos.x+1.f)/2.f;
-    uv.y = (1.f-fs_Pos.y)/2.f;
+    uv.y = (fs_Pos.y+1.f)/2.f;
     vec4 den = texture(Density,uv);
     vec4 col = vec4(0);
     if(den.z>.5){
@@ -31,5 +31,6 @@ void main(){
         }
 
     }
-    out_col = col;
+
+    out_col = den;
 }

@@ -32,6 +32,11 @@ class ShaderProgram {
   attrt3: number;
   attrt4: number;
 
+  attrb1: number;
+  attrb2: number;
+  attrb3: number;
+  attrb4: number;
+
   unifModel: WebGLUniformLocation;
   unifModelInvTr: WebGLUniformLocation;
   unifViewProj: WebGLUniformLocation;
@@ -63,6 +68,12 @@ class ShaderProgram {
     this.attrt2 = gl.getAttribLocation(this.prog, "t2");
     this.attrt3 = gl.getAttribLocation(this.prog, "t3");
     this.attrt4 = gl.getAttribLocation(this.prog, "t4");
+
+    this.attrb1 = gl.getAttribLocation(this.prog, "b1");
+    this.attrb2 = gl.getAttribLocation(this.prog, "b2");
+    this.attrb3 = gl.getAttribLocation(this.prog, "b3");
+    this.attrb4 = gl.getAttribLocation(this.prog, "b4");
+
     this.unifModel      = gl.getUniformLocation(this.prog, "u_Model");
     this.unifModelInvTr = gl.getUniformLocation(this.prog, "u_ModelInvTr");
     this.unifViewProj   = gl.getUniformLocation(this.prog, "u_ViewProj");
@@ -200,7 +211,33 @@ class ShaderProgram {
         gl.vertexAttribDivisor(this.attrt4,1);
     }
 
-    // TODO: Set up attribute data for additional instanced rendering data as needed
+    if(this.attrb1!=-1&&d.bindb1()){
+        gl.enableVertexAttribArray(this.attrb1);
+        gl.vertexAttribPointer(this.attrb1,4,gl.FLOAT,false,0,0);
+        gl.vertexAttribDivisor(this.attrb1,1);
+    }
+
+    if(this.attrb2!=-1&&d.bindb2()){
+        gl.enableVertexAttribArray(this.attrb2);
+        gl.vertexAttribPointer(this.attrb2,4,gl.FLOAT,false,0,0);
+        gl.vertexAttribDivisor(this.attrb2,1);
+    }
+
+
+    if(this.attrb3!=-1&&d.bindb3()){
+        gl.enableVertexAttribArray(this.attrb3);
+        gl.vertexAttribPointer(this.attrb3,4,gl.FLOAT,false,0,0);
+        gl.vertexAttribDivisor(this.attrb3,1);
+    }
+
+    if(this.attrb4!=-1&&d.bindb4()){
+        gl.enableVertexAttribArray(this.attrb4);
+        gl.vertexAttribPointer(this.attrb4,4,gl.FLOAT,false,0,0);
+        gl.vertexAttribDivisor(this.attrb4,1);
+    }
+
+
+      // TODO: Set up attribute data for additional instanced rendering data as needed
 
     d.bindIdx();
     // drawElementsInstanced uses the vertexAttribDivisor for each "in" variable to
@@ -225,6 +262,10 @@ class ShaderProgram {
     if (this.attrt2 != -1) gl.disableVertexAttribArray(this.attrt2);
     if (this.attrt3 != -1) gl.disableVertexAttribArray(this.attrt3);
     if (this.attrt4 != -1) gl.disableVertexAttribArray(this.attrt4);
+    if (this.attrb1 != -1) gl.disableVertexAttribArray(this.attrb1);
+    if (this.attrb2 != -1) gl.disableVertexAttribArray(this.attrb2);
+    if (this.attrb3 != -1) gl.disableVertexAttribArray(this.attrb3);
+    if (this.attrb4 != -1) gl.disableVertexAttribArray(this.attrb4);
   }
 };
 

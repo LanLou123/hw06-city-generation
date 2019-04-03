@@ -12,7 +12,7 @@ export class readtex{
     }
 
     readterrain(p:vec2){
-        let texpos = vec2.fromValues((p[0]+1)*this.scrw/2,(1-p[1])*this.scrh/2);
+        let texpos = vec2.fromValues((p[0]+1)*this.scrw/2,(p[1]+1)*this.scrh/2);
         vec2.floor(texpos,texpos);
         let idx = texpos[1]*this.scrw*4+texpos[0]*4 + 1;
         let col = this.buf[idx]/255;
@@ -20,7 +20,7 @@ export class readtex{
     }
 
     readdens(p:vec2){
-        let texpos = vec2.fromValues((p[0]+1)*this.scrw/2,(1-p[1])*this.scrh/2);
+        let texpos = vec2.fromValues((p[0]+1)*this.scrw/2,(p[1]+1)*this.scrh/2);
         vec2.floor(texpos,texpos);
         let idx = texpos[1]*this.scrw*4+texpos[0]*4 + 0;
         let col = this.buf[idx]/255;
@@ -29,7 +29,7 @@ export class readtex{
 
 
     readwater(p:vec2){
-        let texpos = vec2.fromValues((p[0]+1)*this.scrw/2,(1-p[1])*this.scrh/2);
+        let texpos = vec2.fromValues((p[0]+1)*this.scrw/2,(p[1]+1)*this.scrh/2);
         vec2.floor(texpos,texpos);
         let idx = texpos[1]*this.scrw*4+texpos[0]*4 + 2;
         let col = this.buf[idx]/255;

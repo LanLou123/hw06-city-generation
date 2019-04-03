@@ -32,7 +32,7 @@ void main()
 
     vec4 pp = rot*vs_Pos;
 
-     vec4 p = vec4(pp.x,0,pp.z,1);
+     vec4 p = vec4(pp.xz,0.f,1.f);
 
-    gl_Position = u_ViewProj*p;
+    gl_Position = p;
 }

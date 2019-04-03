@@ -8,15 +8,23 @@ export class Branch{
     end : vec3;
     depth : number;
     type:number;
-    constructor(start:vec3,
-                end:vec3,
-                dp:number,
-                t:number){
+    constructor(start:vec3 = vec3.fromValues(0,0,0),
+                end:vec3 = vec3.fromValues(0,0,0),
+                dp:number = 0,
+                t:number = 0){
 
         this.start = start;
         this.end = end;
         this.depth=dp;
         this.type = t;
+    }
+    clone(){
+        let cur = new Branch();
+        vec3.copy(cur.start,this.start);
+        vec3.copy(cur.end,this.end);
+        cur.depth = this.depth;
+        cur.type = this.type;
+        return cur;
     }
 }
 
@@ -45,6 +53,7 @@ export class edge{
 
 export class Lsystem{
     BranchList : Array<Branch> = [];
+    Branchgrid : Branch[][] = [];// a 2 dimesion array storing arrays of branchs in a grid structure to accelerate neighbor checking process
     EdgeLis :edge[][];
     Angle : number = 18;
     StepSize : number = 0.2;
@@ -57,6 +66,11 @@ export class Lsystem{
         this.texture = new readtex(tex.buf,tex.scrw,tex.scrh);
         this.EdgeLis = new Array<Array<edge>>(this.numCells*this.numCells);
 
+        this.Branchgrid = new Array(this.numCells*this.numCells);
+        for(let i = 0;i<this.numCells*this.numCells+4;i++){
+ 
+            this.Branchgrid[i]= new Array<Branch>();
+        }
     }
 
     genLsys(){
@@ -100,19 +114,108 @@ export class Lsystem{
         this.blockdens = d;
     }
 
-    checksaround(pos:vec2){
+    checksaroundforbranch(pos:vec2){ // acceleration is implemented, the current position will not check every branch in the scene, it will only check the sorrounding 9 cells for neareast intersection
+        let mindis = 10.0;
+        let nearpos = new Branch();
+
+        let sxg = Math.floor((pos[0]+1)*this.numCells/2.0);
+        let syg = Math.floor((pos[1]+1)*this.numCells/2.0);
+        let exg = Math.floor((pos[0]+1)*this.numCells/2.0);
+        let eyg = Math.floor((pos[1]+1)*this.numCells/2.0);
+
+        if(!(sxg>0&&syg>0&&exg>0&&eyg>0)){
+            return null;
+        }
+        let tmpbr = this.Branchgrid[sxg+this.numCells*syg];
+
+        for(let m= 0;m<2;m++){
+            for(let n=0;n<2;n++){
+                if(sxg+m+this.numCells*(syg+n)<0||sxg+m+this.numCells*(syg+n)>this.numCells*this.numCells+4) continue;
+                tmpbr = this.Branchgrid[sxg+m+this.numCells*(syg+n)];
+                if(tmpbr==null) continue;
+                for(let i = 0;i<tmpbr.length;i++){
+                    let curdiss = vec2.distance(vec2.clone(pos),vec2.fromValues(tmpbr[i].start[0],tmpbr[i].start[2]));
+                    let curdise = vec2.distance(vec2.clone(pos),vec2.fromValues(tmpbr[i].end[0],tmpbr[i].end[2]));
+                    if(curdiss<mindis||curdise<mindis){
+                        mindis = curdiss;
+                        nearpos = tmpbr[i].clone();
+                    }
+                }
+            }
+        }
+
+
+        for(let m= 0;m<2;m++){
+            for(let n=0;n<2;n++){
+                if(exg+m+this.numCells*(eyg+n)<0||exg+m+this.numCells*(eyg+n)>this.numCells*this.numCells+4) continue;
+                tmpbr = this.Branchgrid[exg+m+this.numCells*(eyg+n)];
+                if(tmpbr==null) continue;
+                for(let i = 0;i<tmpbr.length;i++){
+                    let curdiss = vec2.distance(vec2.clone(pos),vec2.fromValues(tmpbr[i].start[0],tmpbr[i].start[2]));
+                    let curdise = vec2.distance(vec2.clone(pos),vec2.fromValues(tmpbr[i].end[0],tmpbr[i].end[2]));
+                    if(curdiss<mindis||curdise<mindis){
+                        mindis = curdiss;
+                        nearpos = tmpbr[i].clone();
+                    }
+                }
+            }
+        }
+        return nearpos;
+    }
+
+
+    checksaround(pos:vec2){ // acceleration is implemented, the current position will not check every branch in the scene, it will only check the sorrounding 9 cells for neareast intersection
         let mindis = 10.0;
         let nearpos = vec2.create();
-        for(let i = 0;i<this.BranchList.length;i++){
-            let curdiss = vec2.distance(vec2.clone(pos),vec2.fromValues(this.BranchList[i].start[0],this.BranchList[i].start[2]));
-            let curdise = vec2.distance(vec2.clone(pos),vec2.fromValues(this.BranchList[i].end[0],this.BranchList[i].end[2]));
-            if(curdiss<mindis){
-                mindis = curdiss;
-                nearpos = vec2.fromValues(this.BranchList[i].start[0],this.BranchList[i].start[2]);
+
+        let sxg = Math.floor((pos[0]+1)*this.numCells/2.0);
+        let syg = Math.floor((pos[1]+1)*this.numCells/2.0);
+        let exg = Math.floor((pos[0]+1)*this.numCells/2.0);
+        let eyg = Math.floor((pos[1]+1)*this.numCells/2.0);
+
+        if(!(sxg>0&&syg>0&&exg>0&&eyg>0)){
+            return vec2.fromValues(10,10);
+        }
+        let tmpbr = this.Branchgrid[sxg+this.numCells*syg];
+
+        for(let m= 0;m<2;m++){
+            for(let n=0;n<2;n++){
+                if(sxg+m+this.numCells*(syg+n)<0||sxg+m+this.numCells*(syg+n)>this.numCells*this.numCells+4) continue;
+                tmpbr = this.Branchgrid[sxg+m+this.numCells*(syg+n)];
+                if(tmpbr==null) continue;
+                for(let i = 0;i<tmpbr.length;i++){
+                    let curdiss = vec2.distance(vec2.clone(pos),vec2.fromValues(tmpbr[i].start[0],tmpbr[i].start[2]));
+                    let curdise = vec2.distance(vec2.clone(pos),vec2.fromValues(tmpbr[i].end[0],tmpbr[i].end[2]));
+                    if(curdiss<mindis){
+                        mindis = curdiss;
+                        nearpos = vec2.fromValues(tmpbr[i].start[0],tmpbr[i].start[2]);
+                    }
+                    if(curdise<mindis){
+                        mindis = curdise;
+                        nearpos = vec2.fromValues(tmpbr[i].end[0],tmpbr[i].end[2]);
+                    }
+                }
             }
-            if(curdise<mindis){
-                mindis = curdise;
-                nearpos = vec2.fromValues(this.BranchList[i].end[0],this.BranchList[i].end[2]);
+        }
+
+      
+        for(let m= 0;m<2;m++){
+            for(let n=0;n<2;n++){
+                if(exg+m+this.numCells*(eyg+n)<0||exg+m+this.numCells*(eyg+n)>this.numCells*this.numCells+4) continue;
+                tmpbr = this.Branchgrid[exg+m+this.numCells*(eyg+n)];
+                if(tmpbr==null) continue;
+                for(let i = 0;i<tmpbr.length;i++){
+                    let curdiss = vec2.distance(vec2.clone(pos),vec2.fromValues(tmpbr[i].start[0],tmpbr[i].start[2]));
+                    let curdise = vec2.distance(vec2.clone(pos),vec2.fromValues(tmpbr[i].end[0],tmpbr[i].end[2]));
+                    if(curdiss<mindis){
+                        mindis = curdiss;
+                        nearpos = vec2.fromValues(tmpbr[i].start[0],tmpbr[i].start[2]);
+                    }
+                    if(curdise<mindis){
+                        mindis = curdise;
+                        nearpos = vec2.fromValues(tmpbr[i].end[0],tmpbr[i].end[2]);
+                    }
+                }
             }
         }
         return nearpos;
@@ -122,6 +225,23 @@ export class Lsystem{
         let waters = this.texture.readwater(vec2.fromValues(br.start[0],br.start[2]));
         let watere = this.texture.readwater(vec2.fromValues(br.start[0],br.start[2]));
         if(waters>0.5||watere>0.5) return;
+        let sxg = Math.floor((br.start[0]+1)*this.numCells/2.0);
+        let syg = Math.floor((br.start[2]+1)*this.numCells/2.0);
+        let exg = Math.floor((br.end[0]+1)*this.numCells/2.0);
+        let eyg = Math.floor((br.end[2]+1)*this.numCells/2.0);
+        if((sxg!=exg||syg!=eyg)&&(sxg>=0&&syg>=0&&exg>=0&&eyg>=0)){
+            if(this.Branchgrid[sxg+this.numCells*syg]!=null) {
+                this.Branchgrid[sxg + this.numCells * syg].push(br);
+            }
+            if(this.Branchgrid[exg+this.numCells*eyg]!=null) {
+                this.Branchgrid[exg + this.numCells * eyg].push(br);
+            }
+        }
+        else if((sxg>=0&&syg>=0&&exg>=0&&eyg>=0)){
+            if(this.Branchgrid[sxg+this.numCells*syg]!=null) {
+                this.Branchgrid[sxg + this.numCells * syg].push(br);
+            }
+        }
         this.BranchList.push(br);
     }
 

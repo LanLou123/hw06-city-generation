@@ -11,10 +11,6 @@ in vec4 vs_Nor; // Non-instanced, and presently unused
 in vec4 vs_Col; // An instanced rendering attribute; each particle instance has a different color
 in vec3 vs_Translate; // Another instance rendering attribute used to position each quad instance in the scene
 in vec2 vs_UV; // Non-instanced, and presently unused in main(). Feel free to use it for your meshes.
-in vec4 t1;
-in vec4 t2;
-in vec4 t3;
-in vec4 t4;
 
 out vec4 fs_Col;
 out vec4 fs_Pos;
@@ -24,15 +20,6 @@ void main()
     fs_Col = vs_Col;
     fs_Pos = vs_Pos;
 
-     mat4 rot;
-     rot[0] = t1;
-     rot[1] = t2;
-     rot[2] = t3;
-     rot[3] = t4;
 
-    vec4 pp = rot*vs_Pos;
-
-     vec4 p = vec4(pp.x,0,pp.z,1);
-
-    gl_Position = u_ViewProj*p;
+    gl_Position = u_ViewProj * vs_Pos;
 }
