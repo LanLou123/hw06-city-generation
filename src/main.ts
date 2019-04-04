@@ -296,8 +296,8 @@ function Render2RasterizeTexture(renderer:OpenGLRenderer,gl:WebGL2RenderingConte
 
 
     //calculate random points for building generation in a grid structure
-    let rasterizeGridSize = 100;
-    let stepSize = 2/100.0;
+    let rasterizeGridSize = 70;
+    let stepSize = 2/70.0;
     let buildingpos1 = [];
     let buildingpos2 = [];
     let buildingpos3 = [];
@@ -319,8 +319,8 @@ function Render2RasterizeTexture(renderer:OpenGLRenderer,gl:WebGL2RenderingConte
                 else{
                     rotdir = vec3.subtract(rotdir,tmpbr.start,tmpbr.end);
                 }
-                let near = myl.checksaround(vec2.fromValues(rx,ry));
-                let dis = vec2.distance(near,vec2.fromValues(rx,ry));
+
+                let dis = myl.checksaroundWidthSensitiveDis(vec2.fromValues(rx,ry));
                 vec3.normalize(rotdir,rotdir);
 
                 let rotq = quat.create();
@@ -333,10 +333,12 @@ function Render2RasterizeTexture(renderer:OpenGLRenderer,gl:WebGL2RenderingConte
                     0,1,0,0,
                     0,0,1,0,
                     0,0,0,1);
-                if(dis>0.02){
-                    dis = 0.02;
+                if(dis>0.03){
+                    dis = 0.03;
                 }
-                mat4.scale(model,model,[dis/0.01,1,dis/0.01]);
+                let curdens = tex.readdens(vec2.fromValues(rx,ry));
+                curdens = Math.pow(curdens+0.3,5);
+                mat4.scale(model,model,[dis/0.01,curdens,dis/0.01]);
                 mat4.multiply(model,rotmat,model);
                 mat4.multiply(model,transmat,model);
                 for(let k = 0;k<4;k++){

@@ -21,6 +21,7 @@ in vec4 b4;
 out vec4 fs_Col;
 out vec4 fs_Pos;
 out vec4 fs_Nor;
+out float maxh;
 
 void main()
 {
@@ -30,6 +31,12 @@ void main()
      rot[1] = b2;
      rot[2] = b3;
      rot[3] = b4;
+
+    vec4 pnotrans = vec4(mat3(rot)*vs_Pos.xyz,1.0);
+
+    vec4 h = vec4(0.f,0.08,0.f,1.f);
+    h = rot*h;
+    maxh = h.y;
 
     vec4 pp = rot*vs_Pos;
     fs_Pos = pp;
@@ -41,7 +48,7 @@ void main()
 
 
 
-    float height = pow(den.x+0.1,1.8);
+    float height = pow(den.x+0.1,2.8);
     mat4 m = mat4(1,0,0,0,
     0,height,0,0,
     0,0,1,0,
@@ -51,5 +58,5 @@ void main()
 
     fs_Nor =  vec4(mat3(transpose(inverse(rot)))*vs_Nor.xyz,1.0);
 
-    gl_Position = u_ViewProj*m*pp;
+    gl_Position = u_ViewProj*pp;
 }

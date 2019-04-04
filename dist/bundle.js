@@ -6409,8 +6409,8 @@ function Render2RasterizeTexture(renderer, gl, camera, rasterizeShader) {
                 let transmat = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].create();
                 __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].fromTranslation(transmat, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].fromValues(rx, 0, ry));
                 let model = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].fromValues(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-                if (dis > 0.02) {
-                    dis = 0.02;
+                if (dis > 0.03) {
+                    dis = 0.03;
                 }
                 __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].scale(model, model, [dis / 0.01, 1, dis / 0.01]);
                 __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].multiply(model, rotmat, model);

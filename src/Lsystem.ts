@@ -164,6 +164,77 @@ export class Lsystem{
     }
 
 
+    checksaroundWidthSensitiveDis(pos:vec2){ // acceleration is implemented, the current position will not check every branch in the scene, it will only check the sorrounding 9 cells for neareast intersection
+        let mindis = 10.0;
+        let nearpos = vec2.create();
+
+        let sxg = Math.floor((pos[0]+1)*this.numCells/2.0);
+        let syg = Math.floor((pos[1]+1)*this.numCells/2.0);
+        let exg = Math.floor((pos[0]+1)*this.numCells/2.0);
+        let eyg = Math.floor((pos[1]+1)*this.numCells/2.0);
+
+        if(!(sxg>0&&syg>0&&exg>0&&eyg>0)){
+            return 0;
+        }
+        let tmpbr = this.Branchgrid[sxg+this.numCells*syg];
+
+        let btype = 1;
+
+        for(let m= 0;m<2;m++){
+            for(let n=0;n<2;n++){
+                if(sxg+m+this.numCells*(syg+n)<0||sxg+m+this.numCells*(syg+n)>this.numCells*this.numCells+4) continue;
+                tmpbr = this.Branchgrid[sxg+m+this.numCells*(syg+n)];
+                if(tmpbr==null) continue;
+                for(let i = 0;i<tmpbr.length;i++){
+                    let curdiss = vec2.distance(vec2.clone(pos),vec2.fromValues(tmpbr[i].start[0],tmpbr[i].start[2]));
+                    let curdise = vec2.distance(vec2.clone(pos),vec2.fromValues(tmpbr[i].end[0],tmpbr[i].end[2]));
+                    if(curdiss<mindis){
+                        mindis = curdiss;
+                        nearpos = vec2.fromValues(tmpbr[i].start[0],tmpbr[i].start[2]);
+                        btype = tmpbr[i].type;
+                    }
+                    if(curdise<mindis){
+                        mindis = curdise;
+                        nearpos = vec2.fromValues(tmpbr[i].end[0],tmpbr[i].end[2]);
+                        btype = tmpbr[i].type;
+                    }
+                }
+            }
+        }
+
+
+        for(let m= 0;m<2;m++){
+            for(let n=0;n<2;n++){
+                if(exg+m+this.numCells*(eyg+n)<0||exg+m+this.numCells*(eyg+n)>this.numCells*this.numCells+4) continue;
+                tmpbr = this.Branchgrid[exg+m+this.numCells*(eyg+n)];
+                if(tmpbr==null) continue;
+                for(let i = 0;i<tmpbr.length;i++){
+                    let curdiss = vec2.distance(vec2.clone(pos),vec2.fromValues(tmpbr[i].start[0],tmpbr[i].start[2]));
+                    let curdise = vec2.distance(vec2.clone(pos),vec2.fromValues(tmpbr[i].end[0],tmpbr[i].end[2]));
+                    if(curdiss<mindis){
+                        mindis = curdiss;
+                        nearpos = vec2.fromValues(tmpbr[i].start[0],tmpbr[i].start[2]);
+                        btype = tmpbr[i].type;
+                    }
+                    if(curdise<mindis){
+                        mindis = curdise;
+                        nearpos = vec2.fromValues(tmpbr[i].end[0],tmpbr[i].end[2]);
+                        btype = tmpbr[i].type;
+                    }
+                }
+            }
+        }
+        let dis = vec2.distance(nearpos,pos);
+        let width =1;
+        if(btype==0){// adjust sensitivity here
+            width = 0.01;
+        }
+        else{
+            width = 0.001;
+        }
+        return (dis - width>0)?(dis-width):0;
+    }
+
     checksaround(pos:vec2){ // acceleration is implemented, the current position will not check every branch in the scene, it will only check the sorrounding 9 cells for neareast intersection
         let mindis = 10.0;
         let nearpos = vec2.create();
@@ -244,6 +315,30 @@ export class Lsystem{
         }
         this.BranchList.push(br);
     }
+
+
+    pushHighway(br:Branch){
+
+        let sxg = Math.floor((br.start[0]+1)*this.numCells/2.0);
+        let syg = Math.floor((br.start[2]+1)*this.numCells/2.0);
+        let exg = Math.floor((br.end[0]+1)*this.numCells/2.0);
+        let eyg = Math.floor((br.end[2]+1)*this.numCells/2.0);
+        if((sxg!=exg||syg!=eyg)&&(sxg>=0&&syg>=0&&exg>=0&&eyg>=0)){
+            if(this.Branchgrid[sxg+this.numCells*syg]!=null) {
+                this.Branchgrid[sxg + this.numCells * syg].push(br);
+            }
+            if(this.Branchgrid[exg+this.numCells*eyg]!=null) {
+                this.Branchgrid[exg + this.numCells * eyg].push(br);
+            }
+        }
+        else if((sxg>=0&&syg>=0&&exg>=0&&eyg>=0)){
+            if(this.Branchgrid[sxg+this.numCells*syg]!=null) {
+                this.Branchgrid[sxg + this.numCells * syg].push(br);
+            }
+        }
+        this.BranchList.push(br);
+    }
+
 
     drawgrid(t:Turtle,iterations:number){
         let stack = new Array();
@@ -468,7 +563,7 @@ export class Lsystem{
             turtle.moveforward(this.StepSize*1);
             let end = vec3.create();
             vec3.copy(end,turtle.pos);
-            this.BranchList.push(new Branch(start,end, turtle.depth,0));
+            this.pushHighway(new Branch(start,end, turtle.depth,0));
             this.maxdp = Math.max(this.maxdp,turtle.depth);
 
 
