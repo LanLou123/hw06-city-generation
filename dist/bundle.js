@@ -6377,8 +6377,8 @@ function Render2RasterizeTexture(renderer, gl, camera, rasterizeShader) {
     combreader = new __WEBPACK_IMPORTED_MODULE_13__combReader__["a" /* combReader */](rasterizebuf, window.innerWidth, window.innerHeight);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     //calculate random points for building generation in a grid structure
-    let rasterizeGridSize = 100;
-    let stepSize = 2 / 100.0;
+    let rasterizeGridSize = 70;
+    let stepSize = 2 / 70.0;
     let buildingpos1 = [];
     let buildingpos2 = [];
     let buildingpos3 = [];
@@ -6399,8 +6399,7 @@ function Render2RasterizeTexture(renderer, gl, camera, rasterizeShader) {
                 else {
                     rotdir = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].subtract(rotdir, tmpbr.start, tmpbr.end);
                 }
-                let near = myl.checksaround(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(rx, ry));
-                let dis = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].distance(near, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(rx, ry));
+                let dis = myl.checksaroundWidthSensitiveDis(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(rx, ry));
                 __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].normalize(rotdir, rotdir);
                 let rotq = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* quat */].create();
                 __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* quat */].rotationTo(rotq, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].fromValues(0, 0, 1), rotdir);
@@ -6412,7 +6411,9 @@ function Render2RasterizeTexture(renderer, gl, camera, rasterizeShader) {
                 if (dis > 0.03) {
                     dis = 0.03;
                 }
-                __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].scale(model, model, [dis / 0.01, 1, dis / 0.01]);
+                let curdens = tex.readdens(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(rx, ry));
+                curdens = Math.pow(curdens + 0.3, 5);
+                __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].scale(model, model, [dis / 0.01, curdens, dis / 0.01]);
                 __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].multiply(model, rotmat, model);
                 __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].multiply(model, transmat, model);
                 for (let k = 0; k < 4; k++) {
@@ -17183,6 +17184,74 @@ class Lsystem {
         }
         return nearpos;
     }
+    checksaroundWidthSensitiveDis(pos) {
+        let mindis = 10.0;
+        let nearpos = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].create();
+        let sxg = Math.floor((pos[0] + 1) * this.numCells / 2.0);
+        let syg = Math.floor((pos[1] + 1) * this.numCells / 2.0);
+        let exg = Math.floor((pos[0] + 1) * this.numCells / 2.0);
+        let eyg = Math.floor((pos[1] + 1) * this.numCells / 2.0);
+        if (!(sxg > 0 && syg > 0 && exg > 0 && eyg > 0)) {
+            return 0;
+        }
+        let tmpbr = this.Branchgrid[sxg + this.numCells * syg];
+        let btype = 1;
+        for (let m = 0; m < 2; m++) {
+            for (let n = 0; n < 2; n++) {
+                if (sxg + m + this.numCells * (syg + n) < 0 || sxg + m + this.numCells * (syg + n) > this.numCells * this.numCells + 4)
+                    continue;
+                tmpbr = this.Branchgrid[sxg + m + this.numCells * (syg + n)];
+                if (tmpbr == null)
+                    continue;
+                for (let i = 0; i < tmpbr.length; i++) {
+                    let curdiss = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].distance(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].clone(pos), __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(tmpbr[i].start[0], tmpbr[i].start[2]));
+                    let curdise = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].distance(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].clone(pos), __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(tmpbr[i].end[0], tmpbr[i].end[2]));
+                    if (curdiss < mindis) {
+                        mindis = curdiss;
+                        nearpos = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(tmpbr[i].start[0], tmpbr[i].start[2]);
+                        btype = tmpbr[i].type;
+                    }
+                    if (curdise < mindis) {
+                        mindis = curdise;
+                        nearpos = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(tmpbr[i].end[0], tmpbr[i].end[2]);
+                        btype = tmpbr[i].type;
+                    }
+                }
+            }
+        }
+        for (let m = 0; m < 2; m++) {
+            for (let n = 0; n < 2; n++) {
+                if (exg + m + this.numCells * (eyg + n) < 0 || exg + m + this.numCells * (eyg + n) > this.numCells * this.numCells + 4)
+                    continue;
+                tmpbr = this.Branchgrid[exg + m + this.numCells * (eyg + n)];
+                if (tmpbr == null)
+                    continue;
+                for (let i = 0; i < tmpbr.length; i++) {
+                    let curdiss = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].distance(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].clone(pos), __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(tmpbr[i].start[0], tmpbr[i].start[2]));
+                    let curdise = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].distance(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].clone(pos), __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(tmpbr[i].end[0], tmpbr[i].end[2]));
+                    if (curdiss < mindis) {
+                        mindis = curdiss;
+                        nearpos = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(tmpbr[i].start[0], tmpbr[i].start[2]);
+                        btype = tmpbr[i].type;
+                    }
+                    if (curdise < mindis) {
+                        mindis = curdise;
+                        nearpos = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(tmpbr[i].end[0], tmpbr[i].end[2]);
+                        btype = tmpbr[i].type;
+                    }
+                }
+            }
+        }
+        let dis = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].distance(nearpos, pos);
+        let width = 1;
+        if (btype == 0) { // adjust sensitivity here
+            width = 0.01;
+        }
+        else {
+            width = 0.001;
+        }
+        return (dis - width > 0) ? (dis - width) : 0;
+    }
     checksaround(pos) {
         let mindis = 10.0;
         let nearpos = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].create();
@@ -17243,6 +17312,26 @@ class Lsystem {
         let watere = this.texture.readwater(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(br.start[0], br.start[2]));
         if (waters > 0.5 || watere > 0.5)
             return;
+        let sxg = Math.floor((br.start[0] + 1) * this.numCells / 2.0);
+        let syg = Math.floor((br.start[2] + 1) * this.numCells / 2.0);
+        let exg = Math.floor((br.end[0] + 1) * this.numCells / 2.0);
+        let eyg = Math.floor((br.end[2] + 1) * this.numCells / 2.0);
+        if ((sxg != exg || syg != eyg) && (sxg >= 0 && syg >= 0 && exg >= 0 && eyg >= 0)) {
+            if (this.Branchgrid[sxg + this.numCells * syg] != null) {
+                this.Branchgrid[sxg + this.numCells * syg].push(br);
+            }
+            if (this.Branchgrid[exg + this.numCells * eyg] != null) {
+                this.Branchgrid[exg + this.numCells * eyg].push(br);
+            }
+        }
+        else if ((sxg >= 0 && syg >= 0 && exg >= 0 && eyg >= 0)) {
+            if (this.Branchgrid[sxg + this.numCells * syg] != null) {
+                this.Branchgrid[sxg + this.numCells * syg].push(br);
+            }
+        }
+        this.BranchList.push(br);
+    }
+    pushHighway(br) {
         let sxg = Math.floor((br.start[0] + 1) * this.numCells / 2.0);
         let syg = Math.floor((br.start[2] + 1) * this.numCells / 2.0);
         let exg = Math.floor((br.end[0] + 1) * this.numCells / 2.0);
@@ -17478,7 +17567,7 @@ class Lsystem {
             turtle.moveforward(this.StepSize * 1);
             let end = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].create();
             __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].copy(end, turtle.pos);
-            this.BranchList.push(new Branch(start, end, turtle.depth, 0));
+            this.pushHighway(new Branch(start, end, turtle.depth, 0));
             this.maxdp = Math.max(this.maxdp, turtle.depth);
             //high way guid
             let pp = Math.random();
@@ -17812,7 +17901,7 @@ module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\n// The vertex
 /* 80 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\nlayout (location = 0) out vec4 Density;\r\n\r\n\r\nuniform vec3 u_Eye, u_Ref, u_Up;\r\nuniform vec2 u_Dimensions;\r\nuniform float u_Time;\r\n\r\nin vec2 fs_Pos;\r\n\r\n\r\nfloat random (in vec2 st) {\r\n    return fract(sin(dot(st.xy,\r\n                         vec2(12.9898,78.233)))*\r\n        43758.5453123);\r\n}\r\nfloat mixa(float a,float b,float r){\r\n    return a*(1.f-r)+b*r;\r\n}\r\n// Based on Morgan McGuire @morgan3d\r\n// https://www.shadertoy.com/view/4dS3Wd\r\nfloat noise (in vec2 st) {\r\n    vec2 i = floor(st);\r\n    vec2 f = fract(st);\r\n\r\n    // Four corners in 2D of a tile\r\n    float a = random(i);\r\n    float b = random(i + vec2(1.0, 0.0));\r\n    float c = random(i + vec2(0.0, 1.0));\r\n    float d = random(i + vec2(1.0, 1.0));\r\n\r\n    vec2 u = f * f * (3.0 - 2.0 * f);\r\n\r\n    return mixa(a, b, u.x) +\r\n            (c - a)* u.y * (1.0 - u.x) +\r\n            (d - b) * u.x * u.y;\r\n}\r\n\r\n#define OCTAVES 6\r\nfloat fbm (in vec2 st) {\r\n    // Initial values\r\n    float value = 0.0;\r\n    float amplitude = .5;\r\n    float frequency = 0.;\r\n    //\r\n    // Loop of octaves\r\n    for (int i = 0; i < OCTAVES; i++) {\r\n        value += amplitude * noise(st);\r\n        st *= 2.;\r\n        amplitude *= .5;\r\n    }\r\n    return value;\r\n}\r\n\r\n\r\nvoid main() {\r\n  vec2 uv = fs_Pos;\r\n  uv = vec2(uv.x,uv.y);\r\n  float water = fbm(uv*1.f +vec2(231.0,9.0));\r\n  float col = fbm(uv*1.f+vec2(190.,210.));\r\n  float tcol = fbm(uv*1.f+vec2(20.f,10.f));\r\n  Density = vec4(vec3(col,tcol,water),1.0);\r\n}\r\n"
+module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\nlayout (location = 0) out vec4 Density;\r\n\r\n\r\nuniform vec3 u_Eye, u_Ref, u_Up;\r\nuniform vec2 u_Dimensions;\r\nuniform float u_Time;\r\n\r\nin vec2 fs_Pos;\r\n\r\n\r\nfloat random (in vec2 st) {\r\n    return fract(sin(dot(st.xy,\r\n                         vec2(12.9898,78.233)))*\r\n        43758.5453123);\r\n}\r\nfloat mixa(float a,float b,float r){\r\n    return a*(1.f-r)+b*r;\r\n}\r\n// Based on Morgan McGuire @morgan3d\r\n// https://www.shadertoy.com/view/4dS3Wd\r\nfloat noise (in vec2 st) {\r\n    vec2 i = floor(st);\r\n    vec2 f = fract(st);\r\n\r\n    // Four corners in 2D of a tile\r\n    float a = random(i);\r\n    float b = random(i + vec2(1.0, 0.0));\r\n    float c = random(i + vec2(0.0, 1.0));\r\n    float d = random(i + vec2(1.0, 1.0));\r\n\r\n    vec2 u = f * f * (3.0 - 2.0 * f);\r\n\r\n    return mixa(a, b, u.x) +\r\n            (c - a)* u.y * (1.0 - u.x) +\r\n            (d - b) * u.x * u.y;\r\n}\r\n\r\n#define OCTAVES 6\r\nfloat fbm (in vec2 st) {\r\n    // Initial values\r\n    float value = 0.0;\r\n    float amplitude = .5;\r\n    float frequency = 0.;\r\n    //\r\n    // Loop of octaves\r\n    for (int i = 0; i < OCTAVES; i++) {\r\n        value += amplitude * noise(st);\r\n        st *= 2.;\r\n        amplitude *= .5;\r\n    }\r\n    return value;\r\n}\r\n\r\n\r\nvoid main() {\r\n  vec2 uv = fs_Pos;\r\n  uv = vec2(uv.x,uv.y);\r\n  float water = fbm(uv*1.f +vec2(231.0,9.0));\r\n  float col = fbm(uv*2.f+vec2(110.,30.));\r\n  float tcol = fbm(uv*1.f+vec2(20.f,10.f));\r\n  Density = vec4(vec3(col,tcol,water),1.0);\r\n}\r\n"
 
 /***/ }),
 /* 81 */
@@ -17854,13 +17943,13 @@ module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\n\r\nin vec4 f
 /* 87 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\r\n\r\nuniform mat4 u_ViewProj;\r\nuniform mat4 u_ModelInvTr;\r\nuniform float u_Time;\r\n\r\nuniform sampler2D Density;\r\nuniform sampler2D Comb;\r\n\r\nuniform mat3 u_CameraAxes; // Used for rendering particles as billboards (quads that are always looking at the camera)\r\n// gl_Position = center + vs_Pos.x * camRight + vs_Pos.y * camUp;\r\n\r\nin vec4 vs_Pos; // Non-instanced; each particle is the same quad drawn in a different place\r\nin vec4 vs_Nor; // Non-instanced, and presently unused\r\n\r\nin vec4 b1;\r\nin vec4 b2;\r\nin vec4 b3;\r\nin vec4 b4;\r\n\r\nout vec4 fs_Col;\r\nout vec4 fs_Pos;\r\nout vec4 fs_Nor;\r\n\r\nvoid main()\r\n{\r\n\r\n     mat4 rot;\r\n     rot[0] = b1;\r\n     rot[1] = b2;\r\n     rot[2] = b3;\r\n     rot[3] = b4;\r\n\r\n    vec4 pp = rot*vs_Pos;\r\n    fs_Pos = pp;\r\n    vec2 uv ;\r\n    uv.x = (pp.x+1.f)/2.f;\r\n    uv.y = (pp.z+1.f)/2.f;\r\n    vec4 den = texture(Density,vec2(uv));\r\n    vec4 com = texture(Comb,vec2(uv));\r\n\r\n\r\n\r\n    float height = pow(den.x+0.1,1.8);\r\n    mat4 m = mat4(1,0,0,0,\r\n    0,height,0,0,\r\n    0,0,1,0,\r\n    0,0,0,1);\r\n\r\n\r\n\r\n    fs_Nor =  vec4(mat3(transpose(inverse(rot)))*vs_Nor.xyz,1.0);\r\n\r\n    gl_Position = u_ViewProj*m*pp;\r\n}\r\n"
+module.exports = "#version 300 es\r\n\r\nuniform mat4 u_ViewProj;\r\nuniform mat4 u_ModelInvTr;\r\nuniform float u_Time;\r\n\r\nuniform sampler2D Density;\r\nuniform sampler2D Comb;\r\n\r\nuniform mat3 u_CameraAxes; // Used for rendering particles as billboards (quads that are always looking at the camera)\r\n// gl_Position = center + vs_Pos.x * camRight + vs_Pos.y * camUp;\r\n\r\nin vec4 vs_Pos; // Non-instanced; each particle is the same quad drawn in a different place\r\nin vec4 vs_Nor; // Non-instanced, and presently unused\r\n\r\nin vec4 b1;\r\nin vec4 b2;\r\nin vec4 b3;\r\nin vec4 b4;\r\n\r\nout vec4 fs_Col;\r\nout vec4 fs_Pos;\r\nout vec4 fs_Nor;\r\nout float maxh;\r\n\r\nvoid main()\r\n{\r\n\r\n     mat4 rot;\r\n     rot[0] = b1;\r\n     rot[1] = b2;\r\n     rot[2] = b3;\r\n     rot[3] = b4;\r\n\r\n    vec4 pnotrans = vec4(mat3(rot)*vs_Pos.xyz,1.0);\r\n\r\n    vec4 h = vec4(0.f,0.08,0.f,1.f);\r\n    h = rot*h;\r\n    maxh = h.y;\r\n\r\n    vec4 pp = rot*vs_Pos;\r\n    fs_Pos = pp;\r\n    vec2 uv ;\r\n    uv.x = (pp.x+1.f)/2.f;\r\n    uv.y = (pp.z+1.f)/2.f;\r\n    vec4 den = texture(Density,vec2(uv));\r\n    vec4 com = texture(Comb,vec2(uv));\r\n\r\n\r\n\r\n    float height = pow(den.x+0.1,2.8);\r\n    mat4 m = mat4(1,0,0,0,\r\n    0,height,0,0,\r\n    0,0,1,0,\r\n    0,0,0,1);\r\n\r\n\r\n\r\n    fs_Nor =  vec4(mat3(transpose(inverse(rot)))*vs_Nor.xyz,1.0);\r\n\r\n    gl_Position = u_ViewProj*pp;\r\n}\r\n"
 
 /***/ }),
 /* 88 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\nin vec4 fs_Col;\r\nin vec4 fs_Pos;\r\nin vec4 fs_Nor;\r\n\r\nuniform sampler2D Density;\r\n\r\nout vec4 out_Col;\r\n\r\nvoid main()\r\n{\r\n\r\n\r\n    vec3 ld = vec3(1.f,2.f,3.f);\r\n    ld = normalize(ld);\r\n    float lamb = dot(ld,normalize(fs_Nor.xyz));\r\n    vec2 uv ;\r\n    uv.x = (fs_Pos.x+1.f)/2.f;\r\n    uv.y = (fs_Pos.z+1.f)/2.f;\r\n    vec4 den = texture(Density,vec2(uv));\r\n\r\n\r\n\r\n    out_Col = vec4(vec3(1)*lamb,1.f);//vec4(fs_Nor.xyz,1.f);\r\n}\r\n"
+module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\nin vec4 fs_Col;\r\nin vec4 fs_Pos;\r\nin vec4 fs_Nor;\r\nin float maxh;\r\n\r\nuniform sampler2D Density;\r\n\r\nout vec4 out_Col;\r\n\r\nvoid main()\r\n{\r\n\r\n\r\n    vec3 ld = vec3(1.f,3.f,2.f);\r\n    ld = normalize(ld);\r\n    float lamb = dot(ld,normalize(fs_Nor.xyz));\r\n    vec2 uv ;\r\n    uv.x = (fs_Pos.x+1.f)/2.f;\r\n    uv.y = (fs_Pos.z+1.f)/2.f;\r\n    vec4 den = texture(Density,vec2(uv));\r\n\r\n    float curden = den.x;\r\n    vec3 col;\r\n    if(curden>0.0&&curden<0.2){\r\n        col = vec3(0.1,0.1,0.1);\r\n    }\r\n    else if(curden>=0.2&&curden<0.4){\r\n        col = vec3(0.3,0.3,0.3);\r\n    }\r\n    else if(curden>=0.4&&curden<0.6){\r\n        col = vec3(0.5,0.5,0.5);\r\n    }\r\n    else if(curden>=0.6&&curden<0.8){\r\n        col = vec3(0.8,0.8,0.8);\r\n    }\r\n    else{\r\n        col = vec3(1.0,1.0,1.0);\r\n    }\r\n\r\n    col = vec3(1.);\r\n    col = col*lamb;\r\n\r\n    bool xval = abs((int(fs_Pos.x*1500.0)))%6>2;\r\n    bool yval = abs((int(fs_Pos.y*1500.0)))%6>2;\r\n    bool zval = abs((int(fs_Pos.z*1500.0)))%6>2;\r\n\r\n    if(xval&&yval&&zval&&fs_Pos.y<maxh){\r\n        col = vec3(0.6)*lamb;\r\n    }\r\n\r\n\r\n    out_Col = vec4(col,1.f);//vec4(fs_Nor.xyz,1.f);\r\n}\r\n"
 
 /***/ })
 /******/ ]);

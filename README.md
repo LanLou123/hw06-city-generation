@@ -1,6 +1,6 @@
 # Homework 6: City Generation
 
-<<<<<<< HEAD
+[DEMO](https://lanlou123.github.io/hw06-city-generation/)
 ## current progress : building generation
 ![](./cur.JPG)
 ## Features:
