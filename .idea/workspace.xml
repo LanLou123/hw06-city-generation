@@ -2,17 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1ca3ae33-b5b8-4c2d-93a3-a8ddee2dc221" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/shaders/shadow-frag.glsl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/shaders/shadow-vert.glsl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/bundle.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/bundle.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/bundle.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/dist/bundle.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Lsystem.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Lsystem.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Camera.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Camera.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/geometry/Mesh.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/geometry/Mesh.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/globals.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/globals.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/rendering/gl/OpenGLRenderer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/rendering/gl/OpenGLRenderer.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/shaders/building-frag.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/src/shaders/building-frag.glsl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/shaders/building-vert.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/src/shaders/building-vert.glsl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/shaders/flat-frag.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/src/shaders/flat-frag.glsl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shaders/plane-frag.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/src/shaders/plane-frag.glsl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shaders/plane-vert.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/src/shaders/plane-vert.glsl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shaders/post-frag.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/src/shaders/post-frag.glsl" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/dist/" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -43,18 +46,18 @@
         <counts>
           <entry key="combReader" value="1" />
           <entry key="cube" value="2" />
-          <entry key="glsl" value="54" />
+          <entry key="glsl" value="71" />
           <entry key="html" value="1" />
           <entry key="js" value="3" />
-          <entry key="ts" value="104" />
+          <entry key="ts" value="115" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="HTML" value="1" />
           <entry key="JavaScript" value="3" />
-          <entry key="PLAIN_TEXT" value="54" />
-          <entry key="TypeScript" value="107" />
+          <entry key="PLAIN_TEXT" value="71" />
+          <entry key="TypeScript" value="118" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.js.language.service.starts">
@@ -66,14 +69,14 @@
         <counts>
           <entry key="combReader" value="10" />
           <entry key="cube" value="8" />
-          <entry key="glsl" value="3816" />
-          <entry key="ts" value="19562" />
+          <entry key="glsl" value="4856" />
+          <entry key="ts" value="21974" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="3816" />
-          <entry key="TypeScript" value="19580" />
+          <entry key="PLAIN_TEXT" value="4856" />
+          <entry key="TypeScript" value="21992" />
         </counts>
       </usages-collector>
     </session>
@@ -83,17 +86,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="265">
-              <caret line="322" column="21" selection-start-line="322" selection-start-column="21" selection-end-line="322" selection-end-column="21" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/shaders/flat-frag.glsl">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="545">
-              <caret line="61" column="35" selection-start-line="61" selection-start-column="35" selection-end-line="61" selection-end-column="35" />
+            <state relative-caret-position="623">
+              <caret line="792" column="23" lean-forward="true" selection-start-line="792" selection-start-column="23" selection-end-line="792" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -101,8 +95,44 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/shaders/plane-frag.glsl">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="95">
-              <caret line="5" column="26" selection-start-line="5" selection-start-column="26" selection-end-line="5" selection-end-column="26" />
+            <state relative-caret-position="61">
+              <caret line="12" column="1" lean-forward="true" selection-start-line="12" selection-start-column="1" selection-end-line="12" selection-end-column="1" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/shaders/flat-frag.glsl">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="488">
+              <caret line="61" column="33" selection-start-line="61" selection-start-column="33" selection-end-line="61" selection-end-column="33" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/shaders/post-frag.glsl">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="517">
+              <caret line="42" column="12" selection-start-line="42" selection-start-column="12" selection-end-line="42" selection-end-column="12" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/shaders/plane-vert.glsl">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="517">
+              <caret line="35" column="32" selection-start-line="35" selection-start-column="29" selection-end-line="35" selection-end-column="32" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/shaders/shadow-vert.glsl">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="220">
+              <caret line="44" column="13" lean-forward="true" selection-start-line="44" selection-start-column="13" selection-end-line="44" selection-end-column="13" />
             </state>
           </provider>
         </entry>
@@ -110,26 +140,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/shaders/building-frag.glsl">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="412">
-              <caret line="47" column="45" selection-start-line="47" selection-start-column="45" selection-end-line="47" selection-end-column="45" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/shaders/building-vert.glsl">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="412">
-              <caret line="54" column="13" lean-forward="true" selection-start-line="54" selection-start-column="13" selection-end-line="54" selection-end-column="13" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/shaders/instanced-vert.glsl">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="15" column="11" selection-start-line="15" selection-start-column="11" selection-end-line="15" selection-end-column="11" />
+            <state relative-caret-position="194">
+              <caret line="23" column="31" selection-start-line="23" selection-start-column="31" selection-end-line="23" selection-end-column="31" />
             </state>
           </provider>
         </entry>
@@ -137,35 +149,26 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/rendering/gl/ShaderProgram.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4978">
-              <caret line="264" column="68" selection-start-line="264" selection-start-column="68" selection-end-line="264" selection-end-column="68" />
+            <state relative-caret-position="130">
+              <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/rendering/gl/Drawable.ts">
+        <entry file="file://$PROJECT_DIR$/src/shaders/building-vert.glsl">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4275">
-              <caret line="225" column="30" selection-start-line="225" selection-start-column="30" selection-end-line="225" selection-end-column="30" />
+            <state relative-caret-position="422">
+              <caret line="49" column="32" lean-forward="true" selection-start-line="49" selection-start-column="4" selection-end-line="49" selection-end-column="32" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/geometry/cube.ts">
+        <entry file="file://$PROJECT_DIR$/src/shaders/shadow-frag.glsl">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2354">
-              <caret line="133" column="62" selection-start-line="133" selection-start-column="62" selection-end-line="133" selection-end-column="62" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Lsystem.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="409">
-              <caret line="229" column="24" selection-start-line="229" selection-start-column="24" selection-end-line="229" selection-end-column="24" />
+            <state relative-caret-position="133">
+              <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
             </state>
           </provider>
         </entry>
@@ -190,7 +193,6 @@
       <find>unifTime</find>
       <find>setupLsys</find>
       <find>stack</find>
-      <find>plane</find>
       <find>unifdtype</find>
       <find>1000</find>
       <find>tex</find>
@@ -202,6 +204,14 @@
       <find>attrb2</find>
       <find>bufb2</find>
       <find>building</find>
+      <find>high2</find>
+      <find>u_Dimensions</find>
+      <find>plane</find>
+      <find>shadowtex</find>
+      <find>shadowMVmat</find>
+      <find>width</find>
+      <find>bindFramebuffer</find>
+      <find>m</find>
     </findStrings>
     <replaceStrings>
       <replace>0</replace>
@@ -222,25 +232,34 @@
         <option value="$PROJECT_DIR$/src/turtle.ts" />
         <option value="$PROJECT_DIR$/src/geometry/plane.ts" />
         <option value="$PROJECT_DIR$/src/geometry/cube" />
-        <option value="$PROJECT_DIR$/src/shaders/plane-vert.glsl" />
-        <option value="$PROJECT_DIR$/src/Camera.ts" />
         <option value="$PROJECT_DIR$/src/shaders/instanced-vert.glsl" />
         <option value="$PROJECT_DIR$/src/shaders/rasterize-vert.glsl" />
         <option value="$PROJECT_DIR$/src/shaders/rasterize-frag.glsl" />
         <option value="$PROJECT_DIR$/src/shaders/comb-vert.glsl" />
-        <option value="$PROJECT_DIR$/src/shaders/post-frag.glsl" />
         <option value="$PROJECT_DIR$/src/readtex.ts" />
         <option value="$PROJECT_DIR$/src/combReader" />
         <option value="$PROJECT_DIR$/src/combReader.ts" />
         <option value="$PROJECT_DIR$/src/shaders/comb-frag.glsl" />
-        <option value="$PROJECT_DIR$/src/shaders/plane-frag.glsl" />
         <option value="$PROJECT_DIR$/src/rendering/gl/ShaderProgram.ts" />
         <option value="$PROJECT_DIR$/src/rendering/gl/Drawable.ts" />
         <option value="$PROJECT_DIR$/src/geometry/cube.ts" />
-        <option value="$PROJECT_DIR$/src/shaders/flat-frag.glsl" />
-        <option value="$PROJECT_DIR$/src/main.ts" />
         <option value="$PROJECT_DIR$/src/Lsystem.ts" />
+        <option value="$PROJECT_DIR$/src/shaders/flat-frag.glsl" />
+        <option value="$PROJECT_DIR$/src/globals.ts" />
+        <option value="$PROJECT_DIR$/src/geometry/Mesh.ts" />
+        <option value="$PROJECT_DIR$/src/rendering/gl/OpenGLRenderer.ts" />
+        <option value="$PROJECT_DIR$/src/shaders/gbuffer-vert.glsl" />
+        <option value="$PROJECT_DIR$/src/shaders/gbuffer-frag.glsl" />
         <option value="$PROJECT_DIR$/src/shaders/building-vert.glsl" />
+        <option value="$PROJECT_DIR$/src/Camera.ts" />
+        <option value="$PROJECT_DIR$/src/shaders/shadowplane-frag.glsl" />
+        <option value="$PROJECT_DIR$/src/shaders/shadowplane-vert.glsl" />
+        <option value="$PROJECT_DIR$/src/shaders/shadow-vert.glsl" />
+        <option value="$PROJECT_DIR$/src/shaders/shadow-frag.glsl" />
+        <option value="$PROJECT_DIR$/src/main.ts" />
+        <option value="$PROJECT_DIR$/src/shaders/plane-vert.glsl" />
+        <option value="$PROJECT_DIR$/src/shaders/post-frag.glsl" />
+        <option value="$PROJECT_DIR$/src/shaders/plane-frag.glsl" />
         <option value="$PROJECT_DIR$/src/shaders/building-frag.glsl" />
       </list>
     </option>
@@ -393,12 +412,12 @@
       <workItem from="1554262686206" duration="29000" />
       <workItem from="1554262798952" duration="19979000" />
       <workItem from="1554332759156" duration="1221000" />
-      <workItem from="1554334315720" duration="5721000" />
+      <workItem from="1554334315720" duration="42501000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="161670000" />
+    <option name="totallyTimeSpent" value="198450000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1096" extended-state="6" />
@@ -415,7 +434,7 @@
       <window_info anchor="bottom" id="Message" order="4" />
       <window_info anchor="bottom" id="TypeScript" order="5" weight="0.3298647" />
       <window_info anchor="bottom" id="Find" order="6" />
-      <window_info active="true" anchor="bottom" id="Run" order="7" sideWeight="0.49947312" visible="true" weight="0.23829344" />
+      <window_info active="true" anchor="bottom" id="Run" order="7" sideWeight="0.49947312" visible="true" weight="0.26742977" />
       <window_info anchor="bottom" id="Debug" order="8" weight="0.3381894" />
       <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="10" weight="0.4" />
@@ -487,79 +506,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/globals.ts" />
     <entry file="file://$PROJECT_DIR$/node_modules/typescript/lib/lib.es2018.full.d.ts" />
     <entry file="file://$PROJECT_DIR$/src/Map.ts" />
     <entry file="file://$PROJECT_DIR$/node_modules/@types/gl-matrix/index.d.ts" />
     <entry file="file://$PROJECT_DIR$/src/noises.ts" />
-    <entry file="file://$PROJECT_DIR$/src/Camera.ts" />
     <entry file="file://$PROJECT_DIR$/node_modules/typescript/lib/lib.es6.d.ts" />
     <entry file="file://$PROJECT_DIR$/src/geometry/plane.ts" />
     <entry file="file://$PROJECT_DIR$/node_modules/@types/webgl2/index.d.ts" />
     <entry file="file://$PROJECT_DIR$/node_modules/typescript/lib/lib.d.ts" />
     <entry file="file://$PROJECT_DIR$/src/shaders/comb-vert.glsl" />
     <entry file="file://$PROJECT_DIR$/src/geometry/ScreenQuad.ts" />
-    <entry file="file://$PROJECT_DIR$/src/shaders/post-vert.glsl" />
     <entry file="file://$PROJECT_DIR$/src/shaders/flat-vert.glsl" />
-    <entry file="file://$PROJECT_DIR$/src/shaders/post-frag.glsl" />
-    <entry file="file://$PROJECT_DIR$/src/geometry/Mesh.ts" />
     <entry file="file://$PROJECT_DIR$/src/readtex.ts" />
     <entry file="file://$PROJECT_DIR$/src/geometry/Square.ts" />
     <entry file="file://$PROJECT_DIR$/node_modules/typescript/lib/lib.es2017.full.d.ts" />
-    <entry file="file://$PROJECT_DIR$/src/combReader.ts" />
     <entry file="file://$PROJECT_DIR$/src/shaders/instanced-frag.glsl" />
     <entry file="file://$PROJECT_DIR$/src/shaders/rasterize-frag.glsl" />
     <entry file="file://$PROJECT_DIR$/src/shaders/rasterize-vert.glsl" />
-    <entry file="file://$PROJECT_DIR$/src/shaders/comb-frag.glsl" />
-    <entry file="file://$PROJECT_DIR$/src/rendering/gl/OpenGLRenderer.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="456">
-          <caret line="37" column="21" selection-start-line="37" selection-start-column="21" selection-end-line="37" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/shaders/plane-vert.glsl">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/turtle.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="513">
           <caret line="27" column="32" selection-start-line="27" selection-start-column="32" selection-end-line="27" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rendering/gl/ShaderProgram.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4978">
-          <caret line="264" column="68" selection-start-line="264" selection-start-column="68" selection-end-line="264" selection-end-column="68" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rendering/gl/Drawable.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4275">
-          <caret line="225" column="30" selection-start-line="225" selection-start-column="30" selection-end-line="225" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/shaders/flat-frag.glsl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="545">
-          <caret line="61" column="35" selection-start-line="61" selection-start-column="35" selection-end-line="61" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/shaders/plane-frag.glsl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="5" column="26" selection-start-line="5" selection-start-column="26" selection-end-line="5" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="265">
-          <caret line="322" column="21" selection-start-line="322" selection-start-column="21" selection-end-line="322" selection-end-column="21" />
         </state>
       </provider>
     </entry>
@@ -570,13 +537,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/geometry/cube.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2354">
-          <caret line="133" column="62" selection-start-line="133" selection-start-column="62" selection-end-line="133" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/shaders/instanced-vert.glsl">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
@@ -584,17 +544,153 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/combReader.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="266">
+          <caret line="14" column="4" selection-start-line="14" selection-start-column="4" selection-end-line="14" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rendering/gl/Drawable.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="644">
+          <caret line="225" column="30" selection-start-line="225" selection-start-column="30" selection-end-line="225" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/globals.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="456">
+          <caret line="24" selection-start-line="24" selection-end-line="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/geometry/cube.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2033">
+          <caret line="109" selection-start-line="109" selection-end-line="112" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/geometry/Mesh.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="13" column="20" lean-forward="true" selection-start-line="13" selection-start-column="20" selection-end-line="13" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rendering/gl/OpenGLRenderer.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="113">
+          <caret line="24" column="28" lean-forward="true" selection-start-line="24" selection-start-column="28" selection-end-line="24" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/typescript/lib/lib.dom.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="235">
+          <caret line="13954" column="4" selection-start-line="13954" selection-start-column="4" selection-end-line="13954" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shaders/post-vert.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="38">
+          <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shaders/comb-frag.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="142">
+          <caret line="10" column="32" lean-forward="true" selection-start-line="10" selection-start-column="32" selection-end-line="10" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shaders/shadowplane-frag.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret line="16" selection-start-line="16" selection-end-line="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shaders/shadowplane-vert.glsl">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Camera.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="9" column="21" selection-start-line="9" selection-start-column="21" selection-end-line="9" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rendering/gl/ShaderProgram.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="130">
+          <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/shaders/building-vert.glsl">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="412">
-          <caret line="54" column="13" lean-forward="true" selection-start-line="54" selection-start-column="13" selection-end-line="54" selection-end-column="13" />
+        <state relative-caret-position="422">
+          <caret line="49" column="32" lean-forward="true" selection-start-line="49" selection-start-column="4" selection-end-line="49" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="623">
+          <caret line="792" column="23" lean-forward="true" selection-start-line="792" selection-start-column="23" selection-end-line="792" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shaders/post-frag.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="517">
+          <caret line="42" column="12" selection-start-line="42" selection-start-column="12" selection-end-line="42" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shaders/plane-vert.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="517">
+          <caret line="35" column="32" selection-start-line="35" selection-start-column="29" selection-end-line="35" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shaders/flat-frag.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="488">
+          <caret line="61" column="33" selection-start-line="61" selection-start-column="33" selection-end-line="61" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shaders/shadow-vert.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="44" column="13" lean-forward="true" selection-start-line="44" selection-start-column="13" selection-end-line="44" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shaders/plane-frag.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="61">
+          <caret line="12" column="1" lean-forward="true" selection-start-line="12" selection-start-column="1" selection-end-line="12" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shaders/shadow-frag.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="133">
+          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/shaders/building-frag.glsl">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="412">
-          <caret line="47" column="45" selection-start-line="47" selection-start-column="45" selection-end-line="47" selection-end-column="45" />
+        <state relative-caret-position="194">
+          <caret line="23" column="31" selection-start-line="23" selection-start-column="31" selection-end-line="23" selection-end-column="31" />
         </state>
       </provider>
     </entry>

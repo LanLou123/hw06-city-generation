@@ -1,5 +1,6 @@
 #version 300 es
 precision highp float;
+#define FOV 45.f
 
 uniform sampler2D Density;
 
@@ -13,24 +14,31 @@ in vec2 fs_Pos;
 
 out vec4 out_col;
 
+vec3 sky(in vec3 rd){
+    return mix(vec3(0.8,0.7,0.6),vec3(0.3,0.5,0.9),clamp(rd.y,0.f,1.f));
+}
+
 void main(){
-    vec2 uv ;
-    uv.x = (fs_Pos.x+1.f)/2.f;
-    uv.y = (fs_Pos.y+1.f)/2.f;
-    vec4 den = texture(Density,uv);
-    vec4 col = vec4(0);
-    if(den.z>.5){
-        col = vec4(0,0,1,1);
-    }
-    else{
-        if(u_dtype==0){
-            col = mix(vec4(0.0,1.0,0.0,1.0),vec4(1.0,0.0,0.0,1.0),den.x);
-        }
-        else{
-            col = mix(vec4(1.0,1.0,1.0,1.0),vec4(0.0,1.0,0.0,1.0),den.z);
-        }
 
-    }
+        vec2 uv;
+        uv.x = (fs_Pos.x+1.f)/2.f;
+        uv.y = (fs_Pos.y+1.f)/2.f;
+        vec4 den = texture(Density,vec2(uv));
 
-    out_col = den;
+    vec2 u_dim =vec2(1000.f,1000.f);
+  float sx = (2.f*gl_FragCoord.x/u_dim.x)-1.f;
+  float sy = 1.f-(2.f*gl_FragCoord.y/u_dim.y);
+  float len = length(u_Ref - u_Eye);
+  vec3 forward = normalize(u_Ref - u_Eye);
+  vec3 right = cross(forward,u_Up);
+  vec3 V = u_Up * len * tan(FOV/2.f);
+  vec3 H = right * len * (u_dim.x/u_dim.y) * tan(FOV/2.f);
+  vec3 p = u_Ref + sx * H - sy * V;
+
+  vec3 rd = normalize(p - u_Eye);
+  vec3 ro = u_Eye;
+
+
+
+  out_col = vec4(sky(rd),1.f);//vec4(vec3(den.x),1.0);
 }

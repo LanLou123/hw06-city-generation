@@ -3,13 +3,18 @@ import Drawable from '../rendering/gl/Drawable';
 import {gl} from '../globals';
 import * as Loader from 'webgl-obj-loader';
 
-class Mesh extends Drawable {
+export class Mesh extends Drawable {
   indices: Uint32Array;
   positions: Float32Array;
   normals: Float32Array;
   colors: Float32Array;
   uvs: Float32Array;
   center: vec4;
+
+    b1:Float32Array;
+    b2:Float32Array;
+    b3:Float32Array;
+    b4:Float32Array;
 
   objString: string;
 
@@ -59,6 +64,11 @@ class Mesh extends Drawable {
     this.generateUV();
     this.generateCol();
 
+      this.generateb1();
+      this.generateb2();
+      this.generateb3();
+      this.generateb4();
+
     this.count = this.indices.length;
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.bufIdx);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
@@ -78,6 +88,21 @@ class Mesh extends Drawable {
     console.log(`Created Mesh from OBJ`);
     this.objString = ""; // hacky clear
   }
+    setInstanceVBOs(building1 : Float32Array, building2 : Float32Array, building3 : Float32Array, building4 : Float32Array){
+        this.b1 = building1;
+        this.b2 = building2;
+        this.b3 = building3;
+        this.b4 = building4;
+        gl.bindBuffer(gl.ARRAY_BUFFER,this.bufb1);
+        gl.bufferData(gl.ARRAY_BUFFER,this.b1,gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER,this.bufb2);
+        gl.bufferData(gl.ARRAY_BUFFER,this.b2,gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER,this.bufb3);
+        gl.bufferData(gl.ARRAY_BUFFER,this.b3,gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER,this.bufb4);
+        gl.bufferData(gl.ARRAY_BUFFER,this.b4,gl.STATIC_DRAW);
+    }
+
 };
 
 export default Mesh;
