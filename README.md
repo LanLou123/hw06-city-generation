@@ -1,5 +1,7 @@
 # Homework 6: City Generation
 
+### pennkey and name : lanlou
+
 [DEMO](https://lanlou123.github.io/hw06-city-generation/)
 ## current progress : building generation
 
@@ -21,33 +23,33 @@
   - Size of the building, here is when the acceleration structure I mentioned above come in handy, each of the building points will try to get a closest point to another road in the acceleration cell, and the closest point will be the restriction of the current building, this information will again be recorded as mat4(scale)
   - Orientation of the building : similarily, we check the closest point, this time we will get the owner road of the point, and get the orientation of that road, and use a quaternion to initilize the rotation matrix...
 
-- **shadow mapping**: a little buggy, but looks ok, I used two passes to create shadow effect, one pass render scene objects in light space(light as camera for and orhto mat), after which I get a shadow map from fbo and I generate a texture using it, following pass will be simply first transform fragments into lightspace and compare depth value, then give them color based on the comparison results, the following image is my depth map:
+- **shadow mapping**: a little buggy, but looks ok, I used two passes to create shadow effect, one pass render scene objects in light space(light as camera for and orhto mat), after which I get a shadow map from fbo and I generate a texture using it, following pass will be simply first transform fragments into lightspace and compare depth value, then give them color based on the comparison results, the following image is my depth map, instead of using a depth comp, I was using texture component to store the FBO output, and also, since I was doing the simulation on a very small scale(-1~1), I would need to use relatively larger resolution texture so that aliasing is not that overwhelming, therefore, I choosed to use 5Xscreen hight width, which turns out giving me pretty decent results, one thing I need to take care is that not forget to change the storage properties of render buffer and the viewport dimension, and change them back after the shadowmap render to texture pass...
 ![](./depthmap.JPG)
 
 - **building models**: I created a bunch of buildings in maya using a plugin called "Qtown"
 The model I made are these:
 
-- lowesest population dens building type1
+  - lowesest population dens building type1
 
 ![](./low1.JPG)
 
-- lowesest population dens building type2
+  - lowesest population dens building type2
 
 ![](./low2.JPG)
 
-- mid population dens building type1
+  - mid population dens building type1
 
 ![](./mid1.JPG)
 
-- mid population dens building type2
+  - mid population dens building type2
 
 ![](./mid2.JPG)
 
-- high population dens building type1
+  - high population dens building type1
 
 ![](./high1.JPG)
 
-- high population dens building type2
+  - high population dens building type2
 
 ![](./high2.JPG)
 
