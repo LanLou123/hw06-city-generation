@@ -30,9 +30,9 @@
 - **building models**: I created a bunch of buildings in maya using a plugin called "Qtown"
 The model I made are these:
 
-  - lowesest population dens building type1
+ - lowesest population dens building type1
 
-![](./low1.JPG)
+![](./low.JPG)
 
   - lowesest population dens building type2
 
