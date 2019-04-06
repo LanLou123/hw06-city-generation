@@ -47,6 +47,7 @@ class ShaderProgram {
   unifUp: WebGLUniformLocation;
   unifDimensions: WebGLUniformLocation;
   unifdtype : WebGLUniformLocation;
+  unifsun: WebGLUniformLocation;
 
   constructor(shaders: Array<Shader>) {
     this.prog = gl.createProgram();
@@ -83,6 +84,7 @@ class ShaderProgram {
     this.unifRef   = gl.getUniformLocation(this.prog, "u_Ref");
     this.unifUp   = gl.getUniformLocation(this.prog, "u_Up");
     this.unifdtype = gl.getUniformLocation(this.prog, "u_dtype");
+      this.unifsun   = gl.getUniformLocation(this.prog, "u_sun");
   }
 
   use() {
@@ -102,6 +104,13 @@ class ShaderProgram {
     }
     if(this.unifUp !== -1) {
       gl.uniform3f(this.unifUp, up[0], up[1], up[2]);
+    }
+  }
+
+  setsun(sun : vec3){
+    this.use();
+    if(this.unifsun!==-1){
+      gl.uniform3f(this.unifsun,sun[0],sun[1],sun[2]);
     }
   }
 

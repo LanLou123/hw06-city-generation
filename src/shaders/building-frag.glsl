@@ -9,6 +9,7 @@ in vec4 shadowpos;
 
 uniform sampler2D Density;
 uniform sampler2D shadow;
+uniform vec3 u_sun;
 
 out vec4 out_Col;
 
@@ -21,13 +22,22 @@ void main()
     vec3 shadowmaploc = shadowpos.xyz/shadowpos.w;
     shadowmaploc = shadowmaploc*0.5+0.5;
     vec4 t = texture(shadow,shadowmaploc.xy);
-    if(t.x<shadowmaploc.z-0.003){
-        shadowval = 0.f;
+    //if(t.x<shadowmaploc.z-0.003){
+    //    shadowval = 0.1f;
+    //}
+     float texsize = 1.0/4000.f;
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(shadow, shadowmaploc.xy + vec2(x, y) * texsize).r;
+            shadowval += shadowmaploc.z - 0.0026 > pcfDepth ? .1 : 1.;
+        }
     }
+     shadowval/=9.0;
 
 
-    vec3 ld = vec3(1.f,3.f,2.f);
-    ld = normalize(ld);
+    vec3 ld = normalize(u_sun);
     float lamb = dot(ld,normalize(fs_Nor.xyz));
     vec2 uv ;
     uv.x = (fs_Pos.x+1.f)/2.f;
@@ -53,6 +63,7 @@ void main()
     }
 
     col = vec3(1.);
+    if(lamb<0.f) lamb = 0.f;
     col = col*lamb;
 
     bool xval = abs((int(fs_Pos.x*1500.0)))%6>2;
@@ -63,6 +74,8 @@ void main()
     //    col = vec3(0.6)*lamb;
     //}
 
+    if(shadowval<0.f) shadowval = 0.f;
 
-    out_Col = vec4(col*shadowval+vec3(0.2,0.2,0.3),1.f);//vec4(vec3(gl_FragCoord.z),1.f);//vec4(fs_Nor.xyz,1.f);
+    vec4 fcol = vec4(col*shadowval+vec3(0.2,0.2,0.3),1.f);//vec4(vec3(gl_FragCoord.z),1.f);//vec4(fs_Nor.xyz,1.f);
+    out_Col = fcol;
 }

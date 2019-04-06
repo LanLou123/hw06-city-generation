@@ -20,6 +20,9 @@ const controls = {
     mask : 'population',
     highwayLength : 30,
     NeighborhoodDensity : 18,
+    shadowposx : 1,
+    shadowposy : 0.6,
+    shadowposz : 0.2,
 };
 
 let square: Square;
@@ -452,8 +455,8 @@ function Render2RasterizeTexture(renderer:OpenGLRenderer,gl:WebGL2RenderingConte
                     let r = Math.random();
                     if(dis>0.01) dis = 0.01;
                     if(dis<0.005) continue;
-                    curdens = Math.pow(curdens-0.2,2);
-                    mat4.scale(model,model,[dis/0.015,curdens+0.0,dis/0.015]);
+                    curdens = Math.pow(curdens-0.4,3);
+                    mat4.scale(model,model,[dis/0.015,curdens/1.1,dis/0.015]);
                     mat4.multiply(model,rotmat,model);
                     mat4.multiply(model,transmat,model);
                     if(r>0.5){
@@ -491,7 +494,7 @@ function Render2RasterizeTexture(renderer:OpenGLRenderer,gl:WebGL2RenderingConte
                         }
                     }
                     else{
-                        mat4.scale(model,model,[dis/0.015,curdens/.8,dis/0.015]);
+                        mat4.scale(model,model,[dis/0.015,curdens/1.,dis/0.015]);
                         mat4.multiply(model,rotmat,model);
                         mat4.multiply(model,transmat,model);
                         for (let k = 0; k < 4; k++) {
@@ -576,6 +579,9 @@ function main() {
   gui.add(controls,'mask',['population','heightField']);
   gui.add(controls,'highwayLength',10,100).step(1);
   gui.add(controls,'NeighborhoodDensity',5,50).step(1);
+  gui.add(controls,'shadowposx',0.2,1).step(0.01);
+    gui.add(controls,'shadowposy',0.6,1).step(0.01);
+    gui.add(controls,'shadowposz',0.2,1).step(0.01);
 
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
@@ -633,7 +639,7 @@ function main() {
 
 
 
-  plane = new Plane(vec3.fromValues(0,-0.0001,0),vec2.fromValues(2,2),15);
+  plane = new Plane(vec3.fromValues(0,-0.0001,0),vec2.fromValues(2,2),20);
   plane.create();
   plane.setNumInstances(1);
 
@@ -693,14 +699,14 @@ function main() {
 
 
       let lightProjectionMat:mat4 = mat4.create(), lightViewMat: mat4 = mat4.create();
-      lightProjectionMat = mat4.ortho(lightProjectionMat,-1.2,1.2,-1.2,1.2,0.0,4.0);
-      lightViewMat = mat4.lookAt(lightViewMat,[1,1,1],[0,0,0],[0,1,0]);
+      lightProjectionMat = mat4.ortho(lightProjectionMat,-1.2,1.2,-1.2,1.2,-1.0,3.0);
+      lightViewMat = mat4.lookAt(lightViewMat,[controls.shadowposx,controls.shadowposy,controls.shadowposz],[0,0,0],[0,1,0]);
       let shadowPmat = gl.getUniformLocation(shadowShader.prog,'uPmat');
       let shadowMVmat = gl.getUniformLocation(shadowShader.prog,'uMVmat');
 
       gl.uniformMatrix4fv(shadowPmat,false,lightProjectionMat);
       gl.uniformMatrix4fv(shadowMVmat,false,lightViewMat);
-
+      renderer.clear();
       renderer.render(camera,shadowShader,[low1,low2,mid1,mid2,high1,high2]);
 
 
@@ -746,7 +752,7 @@ function main() {
 
 
       buildingShader.use();
-
+      buildingShader.setsun(vec3.fromValues(controls.shadowposx,controls.shadowposy,controls.shadowposz));
       let shadowPmatb = gl.getUniformLocation(buildingShader.prog,'uPmat');
       let shadowMVmatb = gl.getUniformLocation(buildingShader.prog,'uMVmat');
 
@@ -789,6 +795,8 @@ function main() {
       gl.bindTexture(gl.TEXTURE_2D,shadowtex);
       var combUniform4 = gl.getUniformLocation(planeshader.prog,"shadow");
       gl.uniform1i(combUniform4,1);
+
+      planeshader.setsun(vec3.fromValues(controls.shadowposx,controls.shadowposy,controls.shadowposz));
 
       renderer.render(camera,planeshader,[plane]);
 

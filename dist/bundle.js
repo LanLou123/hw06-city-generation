@@ -6187,6 +6187,9 @@ const controls = {
     mask: 'population',
     highwayLength: 30,
     NeighborhoodDensity: 18,
+    shadowposx: 1,
+    shadowposy: 0.6,
+    shadowposz: 0.2,
 };
 let square;
 let screenQuad;
@@ -6527,8 +6530,8 @@ function Render2RasterizeTexture(renderer, gl, camera, rasterizeShader) {
                         dis = 0.01;
                     if (dis < 0.005)
                         continue;
-                    curdens = Math.pow(curdens - 0.2, 2);
-                    __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].scale(model, model, [dis / 0.015, curdens + 0.0, dis / 0.015]);
+                    curdens = Math.pow(curdens - 0.4, 3);
+                    __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].scale(model, model, [dis / 0.015, curdens / 1.1, dis / 0.015]);
                     __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].multiply(model, rotmat, model);
                     __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].multiply(model, transmat, model);
                     if (r > 0.5) {
@@ -6566,7 +6569,7 @@ function Render2RasterizeTexture(renderer, gl, camera, rasterizeShader) {
                         }
                     }
                     else {
-                        __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].scale(model, model, [dis / 0.015, curdens / .8, dis / 0.015]);
+                        __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].scale(model, model, [dis / 0.015, curdens / 1., dis / 0.015]);
                         __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].multiply(model, rotmat, model);
                         __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].multiply(model, transmat, model);
                         for (let k = 0; k < 4; k++) {
@@ -6632,6 +6635,9 @@ function main() {
     gui.add(controls, 'mask', ['population', 'heightField']);
     gui.add(controls, 'highwayLength', 10, 100).step(1);
     gui.add(controls, 'NeighborhoodDensity', 5, 50).step(1);
+    gui.add(controls, 'shadowposx', 0.2, 1).step(0.01);
+    gui.add(controls, 'shadowposy', 0.6, 1).step(0.01);
+    gui.add(controls, 'shadowposz', 0.2, 1).step(0.01);
     // get canvas and webgl context
     const canvas = document.getElementById('canvas');
     const gl = canvas.getContext('webgl2');
@@ -6677,7 +6683,7 @@ function main() {
         new __WEBPACK_IMPORTED_MODULE_8__rendering_gl_ShaderProgram__["a" /* Shader */](gl.VERTEX_SHADER, __webpack_require__(91)),
         new __WEBPACK_IMPORTED_MODULE_8__rendering_gl_ShaderProgram__["a" /* Shader */](gl.FRAGMENT_SHADER, __webpack_require__(92)),
     ]);
-    plane = new __WEBPACK_IMPORTED_MODULE_11__geometry_Plane__["a" /* Plane */](__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].fromValues(0, -0.0001, 0), __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(2, 2), 15);
+    plane = new __WEBPACK_IMPORTED_MODULE_11__geometry_Plane__["a" /* Plane */](__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].fromValues(0, -0.0001, 0), __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(2, 2), 20);
     plane.create();
     plane.setNumInstances(1);
     setupLsys(renderer, gl, camera, flat, rasterizeshader);
@@ -6718,12 +6724,13 @@ function main() {
         var combUniform2 = gl.getUniformLocation(shadowShader.prog, "Comb");
         gl.uniform1i(combUniform2, 1);
         let lightProjectionMat = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].create(), lightViewMat = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].create();
-        lightProjectionMat = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].ortho(lightProjectionMat, -1.2, 1.2, -1.2, 1.2, 0.0, 4.0);
-        lightViewMat = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].lookAt(lightViewMat, [1, 1, 1], [0, 0, 0], [0, 1, 0]);
+        lightProjectionMat = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].ortho(lightProjectionMat, -1.2, 1.2, -1.2, 1.2, -1.0, 3.0);
+        lightViewMat = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].lookAt(lightViewMat, [controls.shadowposx, controls.shadowposy, controls.shadowposz], [0, 0, 0], [0, 1, 0]);
         let shadowPmat = gl.getUniformLocation(shadowShader.prog, 'uPmat');
         let shadowMVmat = gl.getUniformLocation(shadowShader.prog, 'uMVmat');
         gl.uniformMatrix4fv(shadowPmat, false, lightProjectionMat);
         gl.uniformMatrix4fv(shadowMVmat, false, lightViewMat);
+        renderer.clear();
         renderer.render(camera, shadowShader, [low1, low2, mid1, mid2, high1, high2]);
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.viewport(0, 0, window.innerWidth, window.innerHeight);
@@ -6744,6 +6751,7 @@ function main() {
         instancedShader.use();
         renderer.render(camera, instancedShader, [square]);
         buildingShader.use();
+        buildingShader.setsun(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].fromValues(controls.shadowposx, controls.shadowposy, controls.shadowposz));
         let shadowPmatb = gl.getUniformLocation(buildingShader.prog, 'uPmat');
         let shadowMVmatb = gl.getUniformLocation(buildingShader.prog, 'uMVmat');
         gl.uniformMatrix4fv(shadowPmatb, false, lightProjectionMat);
@@ -6774,6 +6782,7 @@ function main() {
         gl.bindTexture(gl.TEXTURE_2D, shadowtex);
         var combUniform4 = gl.getUniformLocation(planeshader.prog, "shadow");
         gl.uniform1i(combUniform4, 1);
+        planeshader.setsun(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["e" /* vec3 */].fromValues(controls.shadowposx, controls.shadowposy, controls.shadowposz));
         renderer.render(camera, planeshader, [plane]);
         stats.end();
         // Tell the browser to call `tick` again whenever it renders a new frame
@@ -17107,6 +17116,7 @@ class ShaderProgram {
         this.unifRef = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_Ref");
         this.unifUp = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_Up");
         this.unifdtype = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_dtype");
+        this.unifsun = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_sun");
     }
     use() {
         if (activeProgram !== this.prog) {
@@ -17124,6 +17134,12 @@ class ShaderProgram {
         }
         if (this.unifUp !== -1) {
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform3f(this.unifUp, up[0], up[1], up[2]);
+        }
+    }
+    setsun(sun) {
+        this.use();
+        if (this.unifsun !== -1) {
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform3f(this.unifsun, sun[0], sun[1], sun[2]);
         }
     }
     setDimensions(width, height) {
@@ -18256,13 +18272,13 @@ module.exports = "#version 300 es\r\nprecision highp float;\r\n#define FOV 45.f\
 /* 85 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\r\n\r\nuniform mat4 u_ViewProj;\r\nuniform float u_Time;\r\nuniform sampler2D Density;\r\nuniform mat3 u_CameraAxes; // Used for rendering particles as billboards (quads that are always looking at the camera)\r\n// gl_Position = center + vs_Pos.x * camRight + vs_Pos.y * camUp;\r\n\r\n\r\nuniform mat4 uPmat;\r\nuniform mat4 uMVmat;\r\n\r\nin vec4 vs_Pos; // Non-instanced; each particle is the same quad drawn in a different place\r\nin vec4 vs_Nor; // Non-instanced, and presently unused\r\nin vec4 vs_Col; // An instanced rendering attribute; each particle instance has a different color\r\nin vec3 vs_Translate; // Another instance rendering attribute used to position each quad instance in the scene\r\nin vec2 vs_UV; // Non-instanced, and presently unused in main(). Feel free to use it for your meshes.\r\n\r\nout vec4 fs_Col;\r\nout vec4 fs_Pos;\r\nout vec4 shadowpos;\r\n\r\nvoid main()\r\n{\r\n    vec2 uv ;\r\n    uv.x = (vs_Pos.x+1.f)/2.f;\r\n    uv.y = (vs_Pos.z+1.f)/2.f;\r\n    vec4 den = texture(Density,vec2(uv));\r\n    vec4 pos = vs_Pos;\r\n    if(den.z>0.5){\r\n        pos.y = 0.5-den.z;\r\n    }\r\n    fs_Col = vs_Col;\r\n    fs_Pos = pos;\r\n\r\n    shadowpos = uPmat*uMVmat*pos;\r\n\r\n    gl_Position = u_ViewProj * pos;\r\n}"
+module.exports = "#version 300 es\r\n\r\nuniform mat4 u_ViewProj;\r\nuniform float u_Time;\r\nuniform sampler2D Density;\r\nuniform mat3 u_CameraAxes; // Used for rendering particles as billboards (quads that are always looking at the camera)\r\n// gl_Position = center + vs_Pos.x * camRight + vs_Pos.y * camUp;\r\n\r\n\r\nuniform mat4 uPmat;\r\nuniform mat4 uMVmat;\r\n\r\nin vec4 vs_Pos; // Non-instanced; each particle is the same quad drawn in a different place\r\nin vec4 vs_Nor; // Non-instanced, and presently unused\r\nin vec4 vs_Col; // An instanced rendering attribute; each particle instance has a different color\r\nin vec3 vs_Translate; // Another instance rendering attribute used to position each quad instance in the scene\r\nin vec2 vs_UV; // Non-instanced, and presently unused in main(). Feel free to use it for your meshes.\r\n\r\nout vec4 fs_Col;\r\nout vec4 fs_Pos;\r\nout vec4 shadowpos;\r\nout vec4 fs_Nor;\r\n\r\nvoid main()\r\n{\r\n    vec2 uv ;\r\n    uv.x = (vs_Pos.x+1.f)/2.f;\r\n    uv.y = (vs_Pos.z+1.f)/2.f;\r\n    vec4 den = texture(Density,vec2(uv));\r\n    vec4 pos = vs_Pos;\r\n\r\n    vec4 posl = vs_Pos; posl = vs_Pos + vec4(0.001,0.0,0.0,0.0);\r\n    vec4 posr = vs_Pos; posr = vs_Pos + vec4(0.0,0.0,0.001,0.0);\r\n    vec4 denl = texture(Density,posl.xz*0.5+vec2(0.5));\r\n    vec4 denr = texture(Density,posl.xz*0.5+vec2(0.5));\r\n\r\n\r\n    if(den.z>0.5){\r\n        pos.y = (0.5-den.z)/2.0;\r\n    }\r\n    if(denl.z>0.5){\r\n        posl.y = (0.5-denl.z)/2.0;\r\n    }\r\n    if(denr.z>0.5){\r\n        posr.y = (0.5-denr.z)/2.0;\r\n    }\r\n\r\n    fs_Nor = vec4(normalize(cross((-posl+pos).xyz,(posr-pos).xyz)),1.0);\r\n\r\n    fs_Col = vs_Col;\r\n    fs_Pos = pos;\r\n\r\n    shadowpos = uPmat*uMVmat*pos;\r\n\r\n    gl_Position = u_ViewProj * pos;\r\n}"
 
 /***/ }),
 /* 86 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\nin vec4 fs_Col;\r\nin vec4 fs_Pos;\r\nuniform sampler2D Density;\r\nuniform sampler2D shadow;\r\nout vec4 out_Col;\r\n\r\nin vec4 shadowpos;\r\n\r\nvoid main()\r\n{\r\n\r\n    vec2 uv ;\r\n    uv.x = (fs_Pos.x+1.f)/2.f;\r\n    uv.y = (fs_Pos.z+1.f)/2.f;\r\n    vec4 den = texture(Density,vec2(uv));\r\n    vec4 col = vec4(1);\r\n    if(den.z>0.5) col = vec4(vec3(0.f,0.f,1.f)*den.z,1.f);\r\n    else{\r\n        col = vec4(mix(vec3(0,1,0),vec3(0.8,0.8,0.2),den.x*2.f),1.f);\r\n    }\r\n\r\n    float shadowval = 1.f;\r\n\r\n    vec3 shadowmaploc = shadowpos.xyz/shadowpos.w;\r\n    shadowmaploc = shadowmaploc*0.5+0.5;\r\n    vec4 t = texture(shadow,shadowmaploc.xy);\r\n    if(t.x==0.f){\r\n        shadowval = 1.f;\r\n    }\r\n    else if(t.x<shadowmaploc.z-0.003){\r\n        shadowval = 0.f;\r\n    }\r\n\r\n\r\n    out_Col = vec4(col.xyz*shadowval+vec3(0.2,0.2,0.3),1.0);\r\n}"
+module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\nin vec4 fs_Col;\r\nin vec4 fs_Pos;\r\nuniform sampler2D Density;\r\nuniform sampler2D shadow;\r\nuniform vec3 u_sun;\r\nout vec4 out_Col;\r\nin vec4 fs_Nor;\r\nin vec4 shadowpos;\r\n\r\nvoid main()\r\n{\r\n\r\n    vec2 uv ;\r\n    uv.x = (fs_Pos.x+1.f)/2.f;\r\n    uv.y = (fs_Pos.z+1.f)/2.f;\r\n    vec4 den = texture(Density,vec2(uv));\r\n    vec4 col = vec4(1);\r\n    col = vec4(mix(vec3(0,0.7,0),vec3(0.6,0.6,0.1),den.x*2.f),1.f);\r\n    if(den.z>0.5) col = vec4(mix(col.xyz,vec3(0.f,0.f,.6f),(den.z-0.5)*10.f),1.f);\r\n\r\n    float lamb = dot(normalize(u_sun),fs_Nor.xyz);\r\n\r\n    col*=lamb;\r\n    float shadowval = 1.f;\r\n\r\n    float texsize = 1.0/4000.f;\r\n\r\n    vec3 shadowmaploc = shadowpos.xyz/shadowpos.w;\r\n    shadowmaploc = shadowmaploc*0.5+0.5;\r\n    vec4 t = texture(shadow,shadowmaploc.xy);\r\n    if(t.x==0.f){\r\n        shadowval = 1.f;\r\n    }\r\n\r\n    else {\r\n            for(int x = -1; x <= 1; ++x)\r\n            {\r\n                for(int y = -1; y <= 1; ++y)\r\n                {\r\n                    float pcfDepth = texture(shadow, shadowmaploc.xy + vec2(x, y) * texsize).r;\r\n                    if(pcfDepth==0.0) pcfDepth = 1.0;\r\n                    shadowval += shadowmaploc.z - 0.001 > pcfDepth ? .1 : 1.;\r\n                }\r\n            }\r\n            shadowval/=9.0;\r\n\r\n    }\r\n\r\n    //else if(t.x<shadowmaploc.z-0.001){\r\n     //   shadowval = 0.1f;\r\n    //}\r\n\r\n\r\n    out_Col = vec4(col.xyz*shadowval+vec3(0.2,0.2,0.3),1.0);\r\n}"
 
 /***/ }),
 /* 87 */
@@ -18286,7 +18302,7 @@ module.exports = "#version 300 es\r\n\r\nuniform mat4 u_ViewProj;\r\nuniform mat
 /* 90 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\nin vec4 fs_Col;\r\nin vec4 fs_Pos;\r\nin vec4 fs_Nor;\r\nin float maxh;\r\nin vec4 shadowpos;\r\n\r\nuniform sampler2D Density;\r\nuniform sampler2D shadow;\r\n\r\nout vec4 out_Col;\r\n\r\nvoid main()\r\n{\r\n\r\n\r\n    float shadowval = 1.f;\r\n\r\n    vec3 shadowmaploc = shadowpos.xyz/shadowpos.w;\r\n    shadowmaploc = shadowmaploc*0.5+0.5;\r\n    vec4 t = texture(shadow,shadowmaploc.xy);\r\n    if(t.x<shadowmaploc.z-0.003){\r\n        shadowval = 0.f;\r\n    }\r\n\r\n\r\n    vec3 ld = vec3(1.f,3.f,2.f);\r\n    ld = normalize(ld);\r\n    float lamb = dot(ld,normalize(fs_Nor.xyz));\r\n    vec2 uv ;\r\n    uv.x = (fs_Pos.x+1.f)/2.f;\r\n    uv.y = (fs_Pos.z+1.f)/2.f;\r\n    vec4 den = texture(Density,vec2(uv));\r\n\r\n    float curden = den.x;\r\n    vec3 col;\r\n    if(curden>0.0&&curden<0.2){\r\n        col = vec3(0.1,0.1,0.1);\r\n    }\r\n    else if(curden>=0.2&&curden<0.4){\r\n        col = vec3(0.3,0.3,0.3);\r\n    }\r\n    else if(curden>=0.4&&curden<0.6){\r\n        col = vec3(0.5,0.5,0.5);\r\n    }\r\n    else if(curden>=0.6&&curden<0.8){\r\n        col = vec3(0.8,0.8,0.8);\r\n    }\r\n    else{\r\n        col = vec3(1.0,1.0,1.0);\r\n    }\r\n\r\n    col = vec3(1.);\r\n    col = col*lamb;\r\n\r\n    bool xval = abs((int(fs_Pos.x*1500.0)))%6>2;\r\n    bool yval = abs((int(fs_Pos.y*1500.0)))%6>2;\r\n    bool zval = abs((int(fs_Pos.z*1500.0)))%6>2;\r\n\r\n    //if(xval&&yval&&zval&&fs_Pos.y<maxh){\r\n    //    col = vec3(0.6)*lamb;\r\n    //}\r\n\r\n\r\n    out_Col = vec4(col*shadowval+vec3(0.2,0.2,0.3),1.f);//vec4(vec3(gl_FragCoord.z),1.f);//vec4(fs_Nor.xyz,1.f);\r\n}\r\n"
+module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\nin vec4 fs_Col;\r\nin vec4 fs_Pos;\r\nin vec4 fs_Nor;\r\nin float maxh;\r\nin vec4 shadowpos;\r\n\r\nuniform sampler2D Density;\r\nuniform sampler2D shadow;\r\nuniform vec3 u_sun;\r\n\r\nout vec4 out_Col;\r\n\r\nvoid main()\r\n{\r\n\r\n\r\n    float shadowval = 1.f;\r\n\r\n    vec3 shadowmaploc = shadowpos.xyz/shadowpos.w;\r\n    shadowmaploc = shadowmaploc*0.5+0.5;\r\n    vec4 t = texture(shadow,shadowmaploc.xy);\r\n    //if(t.x<shadowmaploc.z-0.003){\r\n    //    shadowval = 0.1f;\r\n    //}\r\n     float texsize = 1.0/4000.f;\r\n    for(int x = -1; x <= 1; ++x)\r\n    {\r\n        for(int y = -1; y <= 1; ++y)\r\n        {\r\n            float pcfDepth = texture(shadow, shadowmaploc.xy + vec2(x, y) * texsize).r;\r\n            shadowval += shadowmaploc.z - 0.0026 > pcfDepth ? .1 : 1.;\r\n        }\r\n    }\r\n     shadowval/=9.0;\r\n\r\n\r\n    vec3 ld = normalize(u_sun);\r\n    float lamb = dot(ld,normalize(fs_Nor.xyz));\r\n    vec2 uv ;\r\n    uv.x = (fs_Pos.x+1.f)/2.f;\r\n    uv.y = (fs_Pos.z+1.f)/2.f;\r\n    vec4 den = texture(Density,vec2(uv));\r\n\r\n    float curden = den.x;\r\n    vec3 col;\r\n    if(curden>0.0&&curden<0.2){\r\n        col = vec3(0.1,0.1,0.1);\r\n    }\r\n    else if(curden>=0.2&&curden<0.4){\r\n        col = vec3(0.3,0.3,0.3);\r\n    }\r\n    else if(curden>=0.4&&curden<0.6){\r\n        col = vec3(0.5,0.5,0.5);\r\n    }\r\n    else if(curden>=0.6&&curden<0.8){\r\n        col = vec3(0.8,0.8,0.8);\r\n    }\r\n    else{\r\n        col = vec3(1.0,1.0,1.0);\r\n    }\r\n\r\n    col = vec3(1.);\r\n    if(lamb<0.f) lamb = 0.f;\r\n    col = col*lamb;\r\n\r\n    bool xval = abs((int(fs_Pos.x*1500.0)))%6>2;\r\n    bool yval = abs((int(fs_Pos.y*1500.0)))%6>2;\r\n    bool zval = abs((int(fs_Pos.z*1500.0)))%6>2;\r\n\r\n    //if(xval&&yval&&zval&&fs_Pos.y<maxh){\r\n    //    col = vec3(0.6)*lamb;\r\n    //}\r\n\r\n    if(shadowval<0.f) shadowval = 0.f;\r\n\r\n    vec4 fcol = vec4(col*shadowval+vec3(0.2,0.2,0.3),1.f);//vec4(vec3(gl_FragCoord.z),1.f);//vec4(fs_Nor.xyz,1.f);\r\n    out_Col = fcol;\r\n}\r\n"
 
 /***/ }),
 /* 91 */

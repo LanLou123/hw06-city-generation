@@ -19,6 +19,7 @@ in vec2 vs_UV; // Non-instanced, and presently unused in main(). Feel free to us
 out vec4 fs_Col;
 out vec4 fs_Pos;
 out vec4 shadowpos;
+out vec4 fs_Nor;
 
 void main()
 {
@@ -27,9 +28,25 @@ void main()
     uv.y = (vs_Pos.z+1.f)/2.f;
     vec4 den = texture(Density,vec2(uv));
     vec4 pos = vs_Pos;
+
+    vec4 posl = vs_Pos; posl = vs_Pos + vec4(0.001,0.0,0.0,0.0);
+    vec4 posr = vs_Pos; posr = vs_Pos + vec4(0.0,0.0,0.001,0.0);
+    vec4 denl = texture(Density,posl.xz*0.5+vec2(0.5));
+    vec4 denr = texture(Density,posl.xz*0.5+vec2(0.5));
+
+
     if(den.z>0.5){
-        pos.y = 0.5-den.z;
+        pos.y = (0.5-den.z)/2.0;
     }
+    if(denl.z>0.5){
+        posl.y = (0.5-denl.z)/2.0;
+    }
+    if(denr.z>0.5){
+        posr.y = (0.5-denr.z)/2.0;
+    }
+
+    fs_Nor = vec4(normalize(cross((-posl+pos).xyz,(posr-pos).xyz)),1.0);
+
     fs_Col = vs_Col;
     fs_Pos = pos;
 
