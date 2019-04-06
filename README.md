@@ -3,7 +3,8 @@
 ### pennkey and name : lanlou
 
 [DEMO](https://lanlou123.github.io/hw06-city-generation/)
-## current progress : building generation
+
+## some result image:
 
 ### normal view 
 
