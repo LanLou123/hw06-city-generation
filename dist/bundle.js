@@ -6243,7 +6243,7 @@ function setupLsys(renderer, gl, camera, flat, rasterizeshader) {
     setUpDensRenderTexture(renderer, gl, camera, flat);
     myl = new __WEBPACK_IMPORTED_MODULE_9__Lsystem__["a" /* Lsystem */](tex);
     myl.setAngle(20);
-    myl.setStepSize(50 / window.innerHeight);
+    myl.setStepSize(50 / 1000);
     myl.setHigwayLen(controls.highwayLength);
     myl.setblockdens(controls.NeighborhoodDensity);
     myl.genLsys();

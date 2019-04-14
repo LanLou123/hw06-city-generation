@@ -90,7 +90,7 @@ function setupLsys(renderer:OpenGLRenderer,gl:WebGL2RenderingContext,camera:Came
     setUpDensRenderTexture(renderer,gl,camera,flat);
     myl= new Lsystem(tex);
     myl.setAngle(20);
-    myl.setStepSize(50/window.innerHeight);
+    myl.setStepSize(50/1000);
     myl.setHigwayLen(controls.highwayLength);
     myl.setblockdens(controls.NeighborhoodDensity);
     myl.genLsys();
