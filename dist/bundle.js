@@ -6368,14 +6368,14 @@ function setUpDensRenderTexture(renderer, gl, camera, flat) {
 function sampleAround(reader, pos, step) {
     //for each random point in current grid, sample around itself to find if there are road within
     //certain range, if there is, return true
-    let div = step / 20.0;
-    for (let i = 0; i < 20; i++) {
+    let div = step / 5.0;
+    for (let i = 0; i < 5; i++) {
         let cur = -step + i * div;
         if (reader.read(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(cur + pos[0], pos[1])) > 0.5) {
             return true;
         }
     }
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 5; i++) {
         let cur = -step + i * div;
         if (reader.read(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec2 */].fromValues(pos[0], pos[1] + cur)) > 0.5) {
             return true;

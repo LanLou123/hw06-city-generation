@@ -57,13 +57,13 @@
           <entry key="combReader" value="10" />
           <entry key="cube" value="8" />
           <entry key="glsl" value="5737" />
-          <entry key="ts" value="22485" />
+          <entry key="ts" value="22489" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="5737" />
-          <entry key="TypeScript" value="22503" />
+          <entry key="TypeScript" value="22507" />
         </counts>
       </usages-collector>
     </session>
@@ -105,8 +105,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2931">
-              <caret line="132" column="31" lean-forward="true" selection-start-line="132" selection-start-column="31" selection-end-line="132" selection-end-column="31" />
+            <state relative-caret-position="63">
+              <caret line="244" column="44" lean-forward="true" selection-start-line="244" selection-start-column="44" selection-end-line="244" selection-end-column="44" />
             </state>
           </provider>
         </entry>
@@ -388,12 +388,12 @@
       <workItem from="1554334315720" duration="50304000" />
       <workItem from="1554821386889" duration="3426000" />
       <workItem from="1555099049523" duration="3871000" />
-      <workItem from="1555255902108" duration="2184000" />
+      <workItem from="1555255902108" duration="2763000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="215734000" />
+    <option name="totallyTimeSpent" value="216313000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1096" extended-state="6" />
@@ -681,8 +681,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2931">
-          <caret line="132" column="31" lean-forward="true" selection-start-line="132" selection-start-column="31" selection-end-line="132" selection-end-column="31" />
+        <state relative-caret-position="63">
+          <caret line="244" column="44" lean-forward="true" selection-start-line="244" selection-start-column="44" selection-end-line="244" selection-end-column="44" />
         </state>
       </provider>
     </entry>

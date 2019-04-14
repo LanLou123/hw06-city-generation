@@ -254,15 +254,15 @@ function sampleAround(reader:combReader, pos : vec2, step : number) {
 
     //for each random point in current grid, sample around itself to find if there are road within
     //certain range, if there is, return true
-    let div = step/20.0;
+    let div = step/5.0;
 
-    for(let i = 0;i<20;i++){
+    for(let i = 0;i<5;i++){
         let cur = -step+i*div;
         if(reader.read(vec2.fromValues(cur+pos[0],pos[1]))>0.5){
             return true;
         }
     }
-    for(let i = 0;i<20;i++){
+    for(let i = 0;i<5;i++){
         let cur = -step+i*div;
         if(reader.read(vec2.fromValues(pos[0],pos[1]+cur))>0.5){
             return true;
