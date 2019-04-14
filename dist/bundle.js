@@ -6304,7 +6304,7 @@ function setupFramebufferandtextures(gl) {
     //Noise generated data from GPU texture, include population density, water distribution, terrain elevation...
     Density = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, Density);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, window.innerWidth, window.innerHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1000, 1000, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -6312,7 +6312,7 @@ function setupFramebufferandtextures(gl) {
     //rasterized texture for instanced street map
     Rasterize = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, Rasterize);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, window.innerWidth, window.innerHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1000, 1000, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -6320,14 +6320,14 @@ function setupFramebufferandtextures(gl) {
     //rasterized texture for the combination of street map and terrain noise information
     combinedTexture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, combinedTexture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, window.innerWidth, window.innerHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1000, 1000, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     shadowtex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, shadowtex);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, window.innerWidth * 5.0, window.innerHeight * 5.0, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1000 * 5.0, 1000 * 5.0, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -6335,7 +6335,7 @@ function setupFramebufferandtextures(gl) {
     //specify our render buffer here
     renderBuffer = gl.createRenderbuffer();
     gl.bindRenderbuffer(gl.RENDERBUFFER, renderBuffer);
-    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, window.innerWidth, window.innerHeight);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, 1000, 1000);
     gl.bindTexture(gl.TEXTURE_2D, null);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.bindRenderbuffer(gl.RENDERBUFFER, null);
@@ -6343,7 +6343,7 @@ function setupFramebufferandtextures(gl) {
 function setUpDensRenderTexture(renderer, gl, camera, flat) {
     //specify framebuffer to render to the population density, water, elevation data texture and read to CPU
     gl.bindRenderbuffer(gl.RENDERBUFFER, renderBuffer);
-    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, window.innerWidth, window.innerHeight);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, 1000, 1000);
     gl.bindFramebuffer(gl.FRAMEBUFFER, frame_buffer);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, Density, 0);
     gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderBuffer);
@@ -6355,15 +6355,15 @@ function setUpDensRenderTexture(renderer, gl, camera, flat) {
     gl.bindTexture(gl.TEXTURE_2D, null);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-    gl.viewport(0, 0, window.innerWidth, window.innerHeight);
+    gl.viewport(0, 0, 1000, 1000);
     renderer.clear();
     gl.bindFramebuffer(gl.FRAMEBUFFER, frame_buffer);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     renderer.render(camera, flat, [screenQuad]);
-    densbuf = new Uint8Array(window.innerWidth * window.innerHeight * 4);
-    gl.readPixels(0, 0, window.innerWidth, window.innerHeight, gl.RGBA, gl.UNSIGNED_BYTE, densbuf);
+    densbuf = new Uint8Array(1000 * 1000 * 4);
+    gl.readPixels(0, 0, 1000, 1000, gl.RGBA, gl.UNSIGNED_BYTE, densbuf);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    tex = new __WEBPACK_IMPORTED_MODULE_10__readtex__["a" /* readtex */](densbuf, window.innerWidth, window.innerHeight);
+    tex = new __WEBPACK_IMPORTED_MODULE_10__readtex__["a" /* readtex */](densbuf, 1000, 1000);
 }
 function sampleAround(reader, pos, step) {
     //for each random point in current grid, sample around itself to find if there are road within
@@ -6402,7 +6402,7 @@ function CheckAroundForRasterize(pos, radius) {
 function Render2RasterizeTexture(renderer, gl, camera, rasterizeShader) {
     //specify the framebuffer information for instanced rendering of street for future rasterization
     gl.bindRenderbuffer(gl.RENDERBUFFER, renderBuffer);
-    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, window.innerWidth, window.innerHeight);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, 1000, 1000);
     gl.bindFramebuffer(gl.FRAMEBUFFER, frame_buffer);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, Rasterize, 0);
     gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderBuffer);
@@ -6410,7 +6410,7 @@ function Render2RasterizeTexture(renderer, gl, camera, rasterizeShader) {
     gl.bindTexture(gl.TEXTURE_2D, null);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-    gl.viewport(0, 0, window.innerWidth, window.innerHeight);
+    gl.viewport(0, 0, 1000, 1000);
     gl.bindFramebuffer(gl.FRAMEBUFFER, frame_buffer);
     renderer.clear();
     rasterizeShader.use();
@@ -6426,7 +6426,7 @@ function Render2RasterizeTexture(renderer, gl, camera, rasterizeShader) {
     gl.bindTexture(gl.TEXTURE_2D, null);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     //render to combined texture
-    gl.viewport(0, 0, window.innerWidth, window.innerHeight);
+    gl.viewport(0, 0, 1000, 1000);
     gl.bindFramebuffer(gl.FRAMEBUFFER, frame_buffer);
     combShader.use();
     renderer.clear();
@@ -6440,9 +6440,9 @@ function Render2RasterizeTexture(renderer, gl, camera, rasterizeShader) {
     gl.uniform1i(RasterUniform, 1);
     renderer.render(camera, combShader, [screenQuad]);
     //write rasterized combined texture to cpu side
-    rasterizebuf = new Uint8Array(window.innerWidth * window.innerHeight * 4);
-    gl.readPixels(0, 0, window.innerWidth, window.innerHeight, gl.RGBA, gl.UNSIGNED_BYTE, rasterizebuf);
-    combreader = new __WEBPACK_IMPORTED_MODULE_13__combReader__["a" /* combReader */](rasterizebuf, window.innerWidth, window.innerHeight);
+    rasterizebuf = new Uint8Array(1000 * 1000 * 4);
+    gl.readPixels(0, 0, 1000, 1000, gl.RGBA, gl.UNSIGNED_BYTE, rasterizebuf);
+    combreader = new __WEBPACK_IMPORTED_MODULE_13__combReader__["a" /* combReader */](rasterizebuf, 1000, 1000);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     //calculate random points for building generation in a grid structure
     let rasterizeGridSize = 100;
@@ -6698,7 +6698,7 @@ function main() {
         instancedShader.setTime(time);
         post.setTime(time);
         flat.setTime(time++);
-        gl.viewport(0, 0, window.innerWidth, window.innerHeight);
+        gl.viewport(0, 0, 1000, 1000);
         renderer.clear();
         if (controls.mask == 'population') {
             post.setdtype(0);
@@ -6706,10 +6706,10 @@ function main() {
         else {
             post.setdtype(1);
         }
-        gl.viewport(0, 0, window.innerWidth * 5, window.innerHeight * 5);
+        gl.viewport(0, 0, 1000 * 5, 1000 * 5);
         gl.bindFramebuffer(gl.FRAMEBUFFER, frame_buffer);
         gl.bindRenderbuffer(gl.RENDERBUFFER, renderBuffer);
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, window.innerWidth * 5.0, window.innerHeight * 5.0);
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, 1000 * 5.0, 1000 * 5.0);
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, shadowtex, 0);
         gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
         gl.bindTexture(gl.TEXTURE_2D, null);
@@ -13915,6 +13915,7 @@ class OpenGLRenderer {
     render(camera, prog, drawables) {
         let model = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].create();
         let viewProj = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].create();
+        let view = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].clone(camera.viewMatrix);
         let color = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["f" /* vec4 */].fromValues(1, 0, 0, 1);
         // Each column of the axes matrix is an axis. Right, Up, Forward.
         let axes = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["a" /* mat3 */].fromValues(camera.right[0], camera.right[1], camera.right[2], camera.up[0], camera.up[1], camera.up[2], camera.forward[0], camera.forward[1], camera.forward[2]);
@@ -13923,7 +13924,7 @@ class OpenGLRenderer {
         __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].identity(model);
         __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].multiply(viewProj, camera.projectionMatrix, camera.viewMatrix);
         prog.setModelMatrix(model);
-        prog.setViewProjMatrix(viewProj);
+        prog.setViewProjMatrix(viewProj, view);
         prog.setCameraAxes(axes);
         for (let drawable of drawables) {
             prog.draw(drawable);
@@ -17117,6 +17118,7 @@ class ShaderProgram {
         this.unifUp = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_Up");
         this.unifdtype = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_dtype");
         this.unifsun = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_sun");
+        this.unifView = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_view");
     }
     use() {
         if (activeProgram !== this.prog) {
@@ -17160,10 +17162,13 @@ class ShaderProgram {
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniformMatrix4fv(this.unifModelInvTr, false, modelinvtr);
         }
     }
-    setViewProjMatrix(vp) {
+    setViewProjMatrix(vp, v) {
         this.use();
         if (this.unifViewProj !== -1) {
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniformMatrix4fv(this.unifViewProj, false, vp);
+        }
+        if (this.unifView !== -1) {
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniformMatrix4fv(this.unifView, false, v);
         }
     }
     setCameraAxes(axes) {
@@ -18296,7 +18301,7 @@ module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\n\r\nin vec4 f
 /* 89 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\r\n\r\nuniform mat4 u_ViewProj;\r\nuniform mat4 u_ModelInvTr;\r\nuniform float u_Time;\r\n\r\nuniform sampler2D Density;\r\nuniform sampler2D Comb;\r\n\r\n\r\nuniform mat4 uPmat;\r\nuniform mat4 uMVmat;\r\n\r\nuniform mat3 u_CameraAxes; // Used for rendering particles as billboards (quads that are always looking at the camera)\r\n// gl_Position = center + vs_Pos.x * camRight + vs_Pos.y * camUp;\r\n\r\nin vec4 vs_Pos; // Non-instanced; each particle is the same quad drawn in a different place\r\nin vec4 vs_Nor; // Non-instanced, and presently unused\r\n\r\nin vec4 b1;\r\nin vec4 b2;\r\nin vec4 b3;\r\nin vec4 b4;\r\n\r\nout vec4 fs_Col;\r\nout vec4 fs_Pos;\r\nout vec4 fs_Nor;\r\nout float maxh;\r\n\r\nout vec4 shadowpos;\r\n\r\nvoid main()\r\n{\r\n\r\n     mat4 rot;\r\n     rot[0] = b1;\r\n     rot[1] = b2;\r\n     rot[2] = b3;\r\n     rot[3] = b4;\r\n\r\n    vec4 pnotrans = vec4(mat3(rot)*vs_Pos.xyz,1.0);\r\n\r\n    vec4 h = vec4(0.f,0.08,0.f,1.f);\r\n    h = rot*h;\r\n    maxh = h.y;\r\n\r\n    vec4 pp = rot*vs_Pos;\r\n    fs_Pos = pp;\r\n\r\n    shadowpos = uPmat*uMVmat*pp;\r\n\r\n    fs_Nor =  vec4(mat3(transpose(inverse(rot)))*vs_Nor.xyz,1.0);\r\n\r\n    gl_Position = u_ViewProj*pp;\r\n}\r\n"
+module.exports = "#version 300 es\r\n\r\nuniform mat4 u_ViewProj;\r\nuniform mat4 u_ModelInvTr;\r\nuniform mat4 u_view;\r\nuniform float u_Time;\r\n\r\nuniform sampler2D Density;\r\nuniform sampler2D Comb;\r\n\r\n\r\nuniform mat4 uPmat;\r\nuniform mat4 uMVmat;\r\n\r\nuniform mat3 u_CameraAxes; // Used for rendering particles as billboards (quads that are always looking at the camera)\r\n// gl_Position = center + vs_Pos.x * camRight + vs_Pos.y * camUp;\r\n\r\nin vec4 vs_Pos; // Non-instanced; each particle is the same quad drawn in a different place\r\nin vec4 vs_Nor; // Non-instanced, and presently unused\r\n\r\nin vec4 b1;\r\nin vec4 b2;\r\nin vec4 b3;\r\nin vec4 b4;\r\n\r\nout vec4 fs_Col;\r\nout vec4 fs_Pos;\r\nout vec4 fs_Nor;\r\nout float maxh;\r\n\r\nout vec4 shadowpos;\r\n\r\nvoid main()\r\n{\r\n\r\n     mat4 rot;\r\n     rot[0] = b1;\r\n     rot[1] = b2;\r\n     rot[2] = b3;\r\n     rot[3] = b4;\r\n\r\n    vec4 pnotrans = vec4(mat3(rot)*vs_Pos.xyz,1.0);\r\n\r\n    vec4 h = vec4(0.f,0.08,0.f,1.f);\r\n    h = rot*h;\r\n    maxh = h.y;\r\n\r\n    vec4 pp = rot*vs_Pos;\r\n    fs_Pos = pp;\r\n\r\n    shadowpos = uPmat*uMVmat*pp;\r\n\r\n    fs_Nor =  vec4(mat3(transpose(inverse(rot)))*vs_Nor.xyz,1.0);\r\n\r\n    gl_Position = u_ViewProj*pp;\r\n}\r\n"
 
 /***/ }),
 /* 90 */
