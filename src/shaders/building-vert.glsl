@@ -2,6 +2,7 @@
 
 uniform mat4 u_ViewProj;
 uniform mat4 u_ModelInvTr;
+uniform mat4 u_view;
 uniform float u_Time;
 
 uniform sampler2D Density;

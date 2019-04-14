@@ -161,7 +161,7 @@ function setupFramebufferandtextures(gl:WebGL2RenderingContext) {
     //Noise generated data from GPU texture, include population density, water distribution, terrain elevation...
     Density = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D,Density);
-    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,window.innerWidth,window.innerHeight,0,
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1000,1000,0,
         gl.RGBA,gl.UNSIGNED_BYTE,null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -172,7 +172,7 @@ function setupFramebufferandtextures(gl:WebGL2RenderingContext) {
     //rasterized texture for instanced street map
     Rasterize = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D,Rasterize);
-    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,window.innerWidth,window.innerHeight,0,
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1000,1000,0,
         gl.RGBA,gl.UNSIGNED_BYTE,null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -183,7 +183,7 @@ function setupFramebufferandtextures(gl:WebGL2RenderingContext) {
     //rasterized texture for the combination of street map and terrain noise information
     combinedTexture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D,combinedTexture);
-    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,window.innerWidth,window.innerHeight,0,
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1000,1000,0,
         gl.RGBA,gl.UNSIGNED_BYTE,null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -192,7 +192,7 @@ function setupFramebufferandtextures(gl:WebGL2RenderingContext) {
 
     shadowtex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D,shadowtex);
-    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,window.innerWidth*5.0,window.innerHeight*5.0,0,
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1000*5.0,1000*5.0,0,
         gl.RGBA,gl.UNSIGNED_BYTE,null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -204,7 +204,7 @@ function setupFramebufferandtextures(gl:WebGL2RenderingContext) {
     renderBuffer = gl.createRenderbuffer();
     gl.bindRenderbuffer(gl.RENDERBUFFER,renderBuffer);
     gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16,
-        window.innerWidth,window.innerHeight);
+        1000,1000);
 
     gl.bindTexture(gl.TEXTURE_2D,null);
     gl.bindFramebuffer(gl.FRAMEBUFFER,null);
@@ -217,7 +217,7 @@ function setUpDensRenderTexture(renderer:OpenGLRenderer,gl:WebGL2RenderingContex
     //specify framebuffer to render to the population density, water, elevation data texture and read to CPU
     gl.bindRenderbuffer(gl.RENDERBUFFER,renderBuffer);
     gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16,
-        window.innerWidth,window.innerHeight);
+        1000,1000);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER,frame_buffer);
     gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,Density,0);
@@ -233,18 +233,18 @@ function setUpDensRenderTexture(renderer:OpenGLRenderer,gl:WebGL2RenderingContex
     gl.bindRenderbuffer(gl.RENDERBUFFER,null);
 
 
-    gl.viewport(0, 0, window.innerWidth, window.innerHeight);
+    gl.viewport(0, 0, 1000, 1000);
     renderer.clear();
     gl.bindFramebuffer(gl.FRAMEBUFFER,frame_buffer);
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 
     renderer.render(camera, flat, [screenQuad]);
 
-    densbuf = new Uint8Array(window.innerWidth*window.innerHeight*4);
-    gl.readPixels(0,0,window.innerWidth,window.innerHeight,gl.RGBA,gl.UNSIGNED_BYTE,densbuf);
+    densbuf = new Uint8Array(1000*1000*4);
+    gl.readPixels(0,0,1000,1000,gl.RGBA,gl.UNSIGNED_BYTE,densbuf);
     gl.bindFramebuffer(gl.FRAMEBUFFER,null);
 
-    tex = new readtex(densbuf,window.innerWidth,window.innerHeight);
+    tex = new readtex(densbuf,1000,1000);
 }
 
 
@@ -298,7 +298,7 @@ function Render2RasterizeTexture(renderer:OpenGLRenderer,gl:WebGL2RenderingConte
     //specify the framebuffer information for instanced rendering of street for future rasterization
     gl.bindRenderbuffer(gl.RENDERBUFFER,renderBuffer);
     gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16,
-        window.innerWidth,window.innerHeight);
+        1000,1000);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER,frame_buffer);
     gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,Rasterize,0);
@@ -310,7 +310,7 @@ function Render2RasterizeTexture(renderer:OpenGLRenderer,gl:WebGL2RenderingConte
     gl.bindFramebuffer(gl.FRAMEBUFFER,null);
     gl.bindRenderbuffer(gl.RENDERBUFFER,null);
 
-    gl.viewport(0, 0, window.innerWidth,window.innerHeight);
+    gl.viewport(0, 0, 1000,1000);
     gl.bindFramebuffer(gl.FRAMEBUFFER,frame_buffer);
     renderer.clear();
 
@@ -334,7 +334,7 @@ function Render2RasterizeTexture(renderer:OpenGLRenderer,gl:WebGL2RenderingConte
 
 
     //render to combined texture
-    gl.viewport(0, 0, window.innerWidth,window.innerHeight);
+    gl.viewport(0, 0, 1000,1000);
     gl.bindFramebuffer(gl.FRAMEBUFFER,frame_buffer);
     combShader.use();
     renderer.clear();
@@ -352,9 +352,9 @@ function Render2RasterizeTexture(renderer:OpenGLRenderer,gl:WebGL2RenderingConte
     renderer.render(camera,combShader,[screenQuad]);
 
     //write rasterized combined texture to cpu side
-    rasterizebuf = new Uint8Array(window.innerWidth*window.innerHeight*4);
-    gl.readPixels(0,0,window.innerWidth,window.innerHeight,gl.RGBA,gl.UNSIGNED_BYTE,rasterizebuf);
-    combreader = new combReader(rasterizebuf,window.innerWidth,window.innerHeight);
+    rasterizebuf = new Uint8Array(1000*1000*4);
+    gl.readPixels(0,0,1000,1000,gl.RGBA,gl.UNSIGNED_BYTE,rasterizebuf);
+    combreader = new combReader(rasterizebuf,1000,1000);
     gl.bindFramebuffer(gl.FRAMEBUFFER,null);
 
 
@@ -663,7 +663,7 @@ function main() {
 
 
 
-    gl.viewport(0, 0, window.innerWidth, window.innerHeight);
+    gl.viewport(0, 0, 1000, 1000);
     renderer.clear();
 
 
@@ -677,11 +677,11 @@ function main() {
     }
 
 
-      gl.viewport(0, 0, window.innerWidth*5, window.innerHeight*5);
+      gl.viewport(0, 0, 1000*5, 1000*5);
       gl.bindFramebuffer(gl.FRAMEBUFFER,frame_buffer);
       gl.bindRenderbuffer(gl.RENDERBUFFER,renderBuffer);
       gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16,
-          window.innerWidth*5.0,window.innerHeight*5.0);
+          1000*5.0,1000*5.0);
       gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,shadowtex,0);
       gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
       gl.bindTexture(gl.TEXTURE_2D, null)

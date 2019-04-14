@@ -48,6 +48,7 @@ class ShaderProgram {
   unifDimensions: WebGLUniformLocation;
   unifdtype : WebGLUniformLocation;
   unifsun: WebGLUniformLocation;
+  unifView : WebGLUniformLocation;
 
   constructor(shaders: Array<Shader>) {
     this.prog = gl.createProgram();
@@ -85,6 +86,7 @@ class ShaderProgram {
     this.unifUp   = gl.getUniformLocation(this.prog, "u_Up");
     this.unifdtype = gl.getUniformLocation(this.prog, "u_dtype");
       this.unifsun   = gl.getUniformLocation(this.prog, "u_sun");
+      this.unifView = gl.getUniformLocation(this.prog, "u_view");
   }
 
   use() {
@@ -135,10 +137,13 @@ class ShaderProgram {
     }
   }
 
-  setViewProjMatrix(vp: mat4) {
+  setViewProjMatrix(vp: mat4, v:mat4) {
     this.use();
     if (this.unifViewProj !== -1) {
       gl.uniformMatrix4fv(this.unifViewProj, false, vp);
+    }
+    if(this.unifView!==-1){
+      gl.uniformMatrix4fv(this.unifView,false,v);
     }
   }
 
